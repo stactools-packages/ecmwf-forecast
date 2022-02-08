@@ -2,22 +2,22 @@ import logging
 
 import click
 
-from stactools.ephemeral import stac
+from stactools.ecmwf_forecast import stac
 
 logger = logging.getLogger(__name__)
 
 
-def create_ephemeralcmd_command(cli):
-    """Creates the stactools-ephemeral command line utility."""
+def create_ecmwfforecast_command(cli):
+    """Creates the stactools-ecmwf-forecast command line utility."""
 
     @cli.group(
-        "ephemeralcmd",
-        short_help=("Commands for working with stactools-ephemeral"),
+        "ecmwfforecast",
+        short_help=("Commands for working with stactools-ecmwf-forecast"),
     )
-    def ephemeralcmd():
+    def ecmwfforecast():
         pass
 
-    @ephemeralcmd.command(
+    @ecmwfforecast.command(
         "create-collection",
         short_help="Creates a STAC collection",
     )
@@ -36,7 +36,7 @@ def create_ephemeralcmd_command(cli):
 
         return None
 
-    @ephemeralcmd.command("create-item", short_help="Create a STAC item")
+    @ecmwfforecast.command("create-item", short_help="Create a STAC item")
     @click.argument("source")
     @click.argument("destination")
     def create_item_command(source: str, destination: str):
@@ -52,4 +52,4 @@ def create_ephemeralcmd_command(cli):
 
         return None
 
-    return ephemeralcmd
+    return ecmwfforecast

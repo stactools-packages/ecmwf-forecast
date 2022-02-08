@@ -1,16 +1,16 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/ephemeral/main?filepath=docs/installation_and_basic_usage.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/ecmwf-forecast/main?filepath=docs/installation_and_basic_usage.ipynb)
 
-# stactools-ephemeral
+# stactools-ecmwf-forecast
 
-- Name: ephemeral
-- Package: `stactools.ephemeral`
-- PyPI: https://pypi.org/project/stactools-ephemeral/
+- Name: ecmwf-forecast
+- Package: `stactools.ecmwf_forecast`
+- PyPI: https://pypi.org/project/stactools-ecmwf-forecast/
 - Owner: @githubusername
 - Dataset homepage: http://example.com
 - STAC extensions used:
   - [proj](https://github.com/stac-extensions/projection/)
 - Extra fields:
-  - `ephemeral:custom`: A custom attribute
+  - `ecmwf-forecast:custom`: A custom attribute
 
 A short description of the package and its usage.
 
@@ -26,7 +26,7 @@ A short description of the package and its usage.
 Description of the command line functions
 
 ```bash
-$ stac ephemeral create-item source destination
+$ stac ecmwf-forecast create-item source destination
 ```
 
-Use `stac ephemeral --help` to see all subcommands and options.
+Use `stac ecmwf-forecast --help` to see all subcommands and options.
