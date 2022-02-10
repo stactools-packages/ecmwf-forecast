@@ -5,6 +5,7 @@ import pathlib
 import re
 import datetime
 import dataclasses
+from typing import Any
 
 import pystac
 from pystac import (
@@ -23,18 +24,29 @@ logger = logging.getLogger(__name__)
 # for the summaries?
 REFERENCE_TIMES = ["00", "06", "12", "18"]
 STREAMS = ["oper", "enfo", "waef", "scda", "scwv", "mmsf"]
-# maybe do steps as two Intervals? hour_steps, minute_steps?
+# STREAMS = [
+#     {"name": "oper", "description": "High-resolution forecast, atmospheric fields. See https://confluence.ecmwf.int/display/FUG/HRES+-+High-Resolution+Forecast for more"},
+#     {"name": "enfo", "description": "Ensemble forecast, atmospheric fields. See https://confluence.ecmwf.int/display/FUG/ENS+-+Ensemble+Forecasts for more."},
+#     {"name": "waef", "description": "Ensemble forecast, ocean wave fields"},
+#     {"name": "scda", "description": "Short cut-off high-resolution forecast, atmospheric fields (also known as \"high-frequency products\")"},
+#     {"name": "scwv", "description": "Short cut-off high-resolution forecast, ocean wave fields (also known as \"high-frequency products\")"},
+#     {"name": "mmsf", "description": "Multi-model seasonal forecasts fields from the ECMWF model only"},
+# ]
+
+# maybe do steps as two Intervals? hour_steps, months_steps?
 STEPS = (
-    [f"{i}h" for i in range(0, 144, 3)] +    
-    [f"{i}h" for i in range(144, 361, 6)] +  # TODO: double check this endpoint, and below
-    [f"{i}m" for i in range(1, 8)]
+    [f"{i}h" for i in range(0, 144, 3)]
+    + [f"{i}h" for i in range(144, 361, 6)]
+    + [f"{i}m" for i in range(1, 8)]  # TODO: double check this endpoint, and below
 )
 STEP_UNITS = ["h", "m"]
 TYPES = ["fc", "ef", "ep", "tf"]
 FORMATS = ["grib2", "bufr"]
+PRESSURE_LEVELS = [1000, 925, 850, 700, 500, 300, 250, 200, 50]
 
-
-xpr = re.compile(r"(?P<reference_datetime>\d{10})0000-(?P<step>\d+[h|m])-(?P<stream>\w+)-(?P<type>\w+).(?P<format>\w+)")
+xpr = re.compile(
+    r"(?P<reference_datetime>\d{10})0000-(?P<step>\d+[h|m])-(?P<stream>\w+)-(?P<type>\w+).(?P<format>\w+)"
+)
 
 
 @dataclasses.dataclass
@@ -53,13 +65,22 @@ class Parts:
         if not m:
             raise ValueError(filename)
         d = m.groupdict()
-        d["reference_datetime"] = datetime.datetime.strptime(d["reference_datetime"], "%Y%m%d%H")
+        d["reference_datetime"] = datetime.datetime.strptime(
+            d["reference_datetime"], "%Y%m%d%H"
+        )
         d["filename"] = filename
         return cls(**d)
 
     @property
     def item_id(self) -> str:
-        return "-".join(["ecmwf", self.reference_datetime.isoformat(timespec="hours"), self.stream, self.type])
+        return "-".join(
+            [
+                "ecmwf",
+                self.reference_datetime.isoformat(timespec="hours"),
+                self.stream,
+                self.type,
+            ]
+        )
 
     @property
     def offset(self) -> datetime.timedelta:
@@ -69,12 +90,13 @@ class Parts:
         if u == "h":
             offset = datetime.timedelta(hours=v)
         else:
-            offset = datetime.timedelta(minutes=v)
-            
+            # TODO: this is wrong. Need to something like a DateOffset
+            raise NotImplementedError()
+
         return offset
 
 
-def create_collection() -> Collection:
+def create_collection(thumbnail=None, extra_fields: dict[str, Any] | None = None) -> Collection:
     """Create a STAC Collection
 
     This function includes logic to extract all relevant metadata from
@@ -93,11 +115,19 @@ def create_collection() -> Collection:
             url="https://www.ecmwf.int/",
         )
     ]
-    # TODO: Add "Attribution" from https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time, either in
-    # STAC metadata or description or both.
     links = [
-        pystac.Link(rel=pystac.RelType.LICENSE, target="https://creativecommons.org/licenses/by/4.0/", media_type="text/html"),
-        pystac.Link(rel="documentation", target="https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time", media_type="text/html"),
+        pystac.Link(
+            rel=pystac.RelType.LICENSE,
+            target="https://creativecommons.org/licenses/by/4.0/",
+            media_type="text/html",
+            title="CC-BY-4.0 license"
+        ),
+        pystac.Link(
+            rel="documentation",
+            target="https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time",
+            media_type="text/html",
+            title="ECMWF Open Data (Real Time) documentation"
+        ),
     ]
 
     extent = Extent(
@@ -113,7 +143,7 @@ def create_collection() -> Collection:
     collection = Collection(
         id="ecmwf-forecast",
         title="ECMWF Open Data (real-time)",
-        description="description",
+        description="{{ collection.description }}",
         license="CC-BY-4.0",
         providers=providers,
         extent=extent,
@@ -129,9 +159,25 @@ def create_collection() -> Collection:
         "ecmwf:streams": STREAMS,
         "ecmwf:steps": STEPS,
         "ecmwf:types": TYPES,
+        "ecmwf:pressure_levels": PRESSURE_LEVELS,
     }
     for k, v in summaries.items():
         collection.summaries.add(k, v)
+
+    if thumbnail is not None:
+        # TODO: guess media type?
+        collection.add_asset(
+            "thumbnail",
+            pystac.Asset(
+                thumbnail,
+                title="thumbnail",
+                roles=[thumbnail],
+                media_type=pystac.MediaType.PNG,
+            ),
+        )
+
+    if extra_fields:
+        collection.extra_fields.update(extra_fields)
 
     return collection
 
@@ -168,7 +214,9 @@ def create_item(asset_hrefs: list[str]) -> Item:
     )
     offset = max(p.offset for p in parts)
     item.properties["start_datetime"] = part.reference_datetime.isoformat() + "Z"
-    item.properties["end_datetime"] = (part.reference_datetime + offset).isoformat() + "Z"
+    item.properties["end_datetime"] = (
+        part.reference_datetime + offset
+    ).isoformat() + "Z"
     item.properties["ecmwf:stream"] = part.stream
     item.properties["ecmwf:type"] = part.type
 

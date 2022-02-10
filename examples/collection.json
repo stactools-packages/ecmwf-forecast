@@ -1,0 +1,101 @@
+{
+  "type": "Collection",
+  "id": "ecmwf-forecast",
+  "stac_version": "1.0.0",
+  "description": "{{ collection.description }}",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "ECMWF Open Data (real-time)"
+    },
+    {
+      "rel": "license",
+      "href": "https://creativecommons.org/licenses/by/4.0/",
+      "type": "text/html",
+      "title": "CC-BY-4.0 license"
+    },
+    {
+      "rel": "documentation",
+      "href": "https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time",
+      "type": "text/html",
+      "title": "ECMWF Open Data (Real Time) documentation"
+    },
+    {
+      "rel": "self",
+      "href": "/home/taugspurger/src/stactools-packages/ecmwf-forecast/examples/collection.json",
+      "type": "application/json"
+    }
+  ],
+  "stac_extensions": [],
+  "title": "ECMWF Open Data (real-time)",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -180.0,
+          90.0,
+          180.0,
+          -90.0
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          null,
+          null
+        ]
+      ]
+    }
+  },
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "ECMWF",
+    "forecast",
+    "weather"
+  ],
+  "providers": [
+    {
+      "name": "ECMWF",
+      "roles": [
+        "producer"
+      ],
+      "url": "https://www.ecmwf.int/"
+    }
+  ],
+  "summaries": {
+    "ecmwf:reference_times": [
+      "00",
+      "06",
+      "12",
+      "18"
+    ],
+    "ecmwf:streams": [
+      "oper",
+      "enfo",
+      "waef",
+      "scda",
+      "scwv",
+      "mmsf"
+    ],
+    "ecmwf:types": [
+      "fc",
+      "ef",
+      "ep",
+      "tf"
+    ],
+    "ecmwf:pressure_levels": [
+      1000,
+      925,
+      850,
+      700,
+      500,
+      300,
+      250,
+      200,
+      50
+    ]
+  }
+}

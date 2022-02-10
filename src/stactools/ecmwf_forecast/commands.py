@@ -11,7 +11,7 @@ def create_ecmwfforecast_command(cli):
     """Creates the stactools-ecmwf-forecast command line utility."""
 
     @cli.group(
-        "ecmwfforecast",
+        "ecmwf-forecast",
         short_help=("Commands for working with stactools-ecmwf-forecast"),
     )
     def ecmwfforecast():
@@ -22,13 +22,17 @@ def create_ecmwfforecast_command(cli):
         short_help="Creates a STAC collection",
     )
     @click.argument("destination")
-    def create_collection_command(destination: str):
+    @click.option("--thumbnail", default=None, help="URL for the collection thumbnail asset.")
+    @click.option("--extra-field", default=None, help="Key-value pairs to include in extra-fields", multiple=True)
+    def create_collection_command(destination: str, thumbnail: str, extra_field):
         """Creates a STAC Collection
 
         Args:
             destination (str): An HREF for the Collection JSON
         """
-        collection = stac.create_collection()
+        extra_fields = dict(k.split("=") for k in extra_field)
+
+        collection = stac.create_collection(thumbnail=thumbnail, extra_fields=extra_fields)
 
         collection.set_self_href(destination)
 
