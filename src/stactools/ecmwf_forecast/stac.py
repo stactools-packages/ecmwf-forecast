@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import itertools
 import pathlib
 import re
 import datetime
@@ -8,6 +9,7 @@ import dataclasses
 from typing import Any
 
 import pystac
+import fsspec
 from pystac import (
     CatalogType,
     Collection,
@@ -182,14 +184,58 @@ def create_collection(thumbnail=None, extra_fields: dict[str, Any] | None = None
     return collection
 
 
-def item_key(filename) -> tuple[datetime.datetime, str, str]:
+ItemKey = tuple[datetime.datetime, str, str]
+
+def item_key(filename) -> ItemKey:
+    """
+    Gives tuple of attributes in a filename used to determine its item.
+
+    This uses the
+
+    * reference daetime
+    * stream
+    * type
+    """
     parts = Parts.from_filename(filename)
     return parts.reference_datetime, parts.stream, parts.type
 
 
+def group_assets(asset_hrefs: list[str]) -> itertools.groupby[ItemKey, str]:
+    """
+    Groups a list of asset HREFs according to which item they belong in.
+    """
+    asset_hrefs = sorted(asset_hrefs, key=item_key)
+    grouped = itertools.groupby(asset_hrefs, key=item_key)
+    return grouped
+
+
+def create_item_from_pattern(source_pattern, protocol, storage_options):
+    storage_options = storage_options or {}
+    fs = fsspec.filesystem(protocol, **storage_options)
+    files = fs.glob(source_pattern)
+    return create_item(files)
+
+
 def create_item(asset_hrefs: list[str]) -> Item:
+    """
+    Create an item for the hrefs.
+
+    Parameters
+    ----------
+    asset_hrefs: list[str]
+        The HREFs for the item's assets. These should all belong to the item, according
+        to `item_key`. Use `group_assets` prior on a list of assets possibly belonging
+        to multiple items.
+
+    Returns
+    -------
+    pystac.Item
+    """
     parts = [Parts.from_filename(href) for href in asset_hrefs]
     part = parts[0]
+    for i, other in enumerate(parts):
+        if part.item_id != other.item_id:
+            raise ValueError(f"Asset {i} has different Item ID ({part.item_id} != {other.item_id}). URL = {asset_hrefs[i]}")
 
     geometry = {
         "type": "Polygon",

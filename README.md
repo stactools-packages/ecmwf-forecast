@@ -13,3 +13,9 @@ stac ecmwf-forecast create-collection template.json \
     --extra-field "msft:storage_account=ai4edatauewest" \
     --extra-field "msft:container=ecmwf"
 ```
+
+## Planetary Computer item
+
+```console
+stac ecmwf-forecast create-item "/ecmwf/20220213/00z/0p4-beta/enfo/*enfo-ep*" item.json -p az --storage-options 'account_name=ai4edataeuwest'
+```
