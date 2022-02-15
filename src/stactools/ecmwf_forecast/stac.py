@@ -26,14 +26,6 @@ logger = logging.getLogger(__name__)
 # for the summaries?
 REFERENCE_TIMES = ["00", "06", "12", "18"]
 STREAMS = ["oper", "enfo", "waef", "scda", "scwv", "mmsf"]
-# STREAMS = [
-#     {"name": "oper", "description": "High-resolution forecast, atmospheric fields. See https://confluence.ecmwf.int/display/FUG/HRES+-+High-Resolution+Forecast for more"},
-#     {"name": "enfo", "description": "Ensemble forecast, atmospheric fields. See https://confluence.ecmwf.int/display/FUG/ENS+-+Ensemble+Forecasts for more."},
-#     {"name": "waef", "description": "Ensemble forecast, ocean wave fields"},
-#     {"name": "scda", "description": "Short cut-off high-resolution forecast, atmospheric fields (also known as \"high-frequency products\")"},
-#     {"name": "scwv", "description": "Short cut-off high-resolution forecast, ocean wave fields (also known as \"high-frequency products\")"},
-#     {"name": "mmsf", "description": "Multi-model seasonal forecasts fields from the ECMWF model only"},
-# ]
 
 # maybe do steps as two Intervals? hour_steps, months_steps?
 STEPS = (
@@ -184,9 +176,8 @@ def create_collection(thumbnail=None, extra_fields: dict[str, Any] | None = None
     return collection
 
 
-ItemKey = tuple[datetime.datetime, str, str]
 
-def item_key(filename) -> ItemKey:
+def item_key(filename) -> tuple[datetime.datetime, str, str]:
     """
     Gives tuple of attributes in a filename used to determine its item.
 
@@ -200,7 +191,7 @@ def item_key(filename) -> ItemKey:
     return parts.reference_datetime, parts.stream, parts.type
 
 
-def group_assets(asset_hrefs: list[str]) -> itertools.groupby[ItemKey, str]:
+def group_assets(asset_hrefs: list[str]):
     """
     Groups a list of asset HREFs according to which item they belong in.
     """
