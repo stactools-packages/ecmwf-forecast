@@ -59,7 +59,7 @@ jobs:
   docker:
     name: docker
     needs:
-      - codecov
+      # - codecov
       - python-matrix
     permissions:
       contents: read
