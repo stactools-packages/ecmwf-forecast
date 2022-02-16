@@ -1,7 +1,8 @@
 import datetime
-import pytest
-from stactools.ecmwf_forecast import stac
 
+import pytest
+
+from stactools.ecmwf_forecast import stac
 
 
 def test_create_collection():

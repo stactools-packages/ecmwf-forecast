@@ -13,7 +13,7 @@ Execute project linters.
 "
 }
 
-EC_EXCLUDE="(__pycache__|.git|.coverage|coverage.xml|.*\.egg-info|.mypy_cache|.tif|.tiff|.npy|.ipynb)"
+EC_EXCLUDE="(__pycache__|.git|.coverage|coverage.xml|.*\.egg-info|.mypy_cache|.tif|.tiff|.npy|.ipynb|*.json)"
 
 DIRS_TO_CHECK=("src" "tests" "scripts")
 
@@ -22,14 +22,19 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         # Text formatting
+        echo ["running ec"]
         ec --exclude "$EC_EXCLUDE"
         # Sort imports
+        echo ["running isort"]
         isort --check .
         # Code formatting
+        echo ["running yapf"]
         yapf -dpr ${DIRS_TO_CHECK[@]}
         # Lint
+        echo ["running flake8"]
         flake8 ${DIRS_TO_CHECK[@]}
         # Type checking
+        echo ["running mypy"]
         mypy src
     fi
 fi

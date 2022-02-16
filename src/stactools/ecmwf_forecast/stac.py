@@ -1,25 +1,17 @@
 from __future__ import annotations
 
-import logging
+import dataclasses
+import datetime
 import itertools
+import logging
 import pathlib
 import re
-import datetime
-import dataclasses
 from typing import Any
 
-import pystac
 import fsspec
-from pystac import (
-    CatalogType,
-    Collection,
-    Extent,
-    Item,
-    Provider,
-    ProviderRole,
-    SpatialExtent,
-    TemporalExtent,
-)
+import pystac
+from pystac import (CatalogType, Collection, Extent, Item, Provider,
+                    ProviderRole, SpatialExtent, TemporalExtent)
 
 logger = logging.getLogger(__name__)
 
