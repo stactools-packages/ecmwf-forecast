@@ -22,8 +22,15 @@ def create_ecmwfforecast_command(cli):
         short_help="Creates a STAC collection",
     )
     @click.argument("destination")
-    @click.option("--thumbnail", default=None, help="URL for the collection thumbnail asset.")
-    @click.option("--extra-field", default=None, help="Key-value pairs to include in extra-fields", multiple=True)
+    @click.option(
+        "--thumbnail", default=None, help="URL for the collection thumbnail asset."
+    )
+    @click.option(
+        "--extra-field",
+        default=None,
+        help="Key-value pairs to include in extra-fields",
+        multiple=True,
+    )
     def create_collection_command(destination: str, thumbnail: str, extra_field):
         """Creates a STAC Collection
 
@@ -32,7 +39,9 @@ def create_ecmwfforecast_command(cli):
         """
         extra_fields = dict(k.split("=") for k in extra_field)
 
-        collection = stac.create_collection(thumbnail=thumbnail, extra_fields=extra_fields)
+        collection = stac.create_collection(
+            thumbnail=thumbnail, extra_fields=extra_fields
+        )
 
         collection.set_self_href(destination)
 
@@ -45,7 +54,9 @@ def create_ecmwfforecast_command(cli):
     @click.argument("destination")
     @click.option("-p", "--protocol")
     @click.option("--storage-options", default=None)
-    def create_item_command(source_pattern: str, destination: str, protocol: str, storage_options: str):
+    def create_item_command(
+        source_pattern: str, destination: str, protocol: str, storage_options: str
+    ):
         """Creates a STAC Item
 
         Args:
@@ -53,9 +64,13 @@ def create_ecmwfforecast_command(cli):
             destination (str): An HREF for the STAC Collection
         """
         if storage_options:
-            storage_options = dict([x.split("=", 1) for x in storage_options.split(",")])
+            storage_options = dict(
+                [x.split("=", 1) for x in storage_options.split(",")]
+            )
 
-        item = stac.create_item_from_pattern(source_pattern, protocol=protocol, storage_options=storage_options)
+        item = stac.create_item_from_pattern(
+            source_pattern, protocol=protocol, storage_options=storage_options
+        )
 
         item.save_object(dest_href=destination)
 

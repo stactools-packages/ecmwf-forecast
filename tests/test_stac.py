@@ -18,10 +18,13 @@ def test_create_collection():
     collection.validate()
 
 
-@pytest.mark.parametrize("filename", [
-    "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-    "20220202000000-0h-enfo-ef.grib2",
-])
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
+        "20220202000000-0h-enfo-ef.grib2",
+    ],
+)
 def test_parts(filename):
     result = stac.Parts.from_filename(filename)
     assert result.reference_datetime == datetime.datetime(2022, 2, 2)

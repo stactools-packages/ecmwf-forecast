@@ -10,8 +10,16 @@ from typing import Any
 
 import fsspec
 import pystac
-from pystac import (CatalogType, Collection, Extent, Item, Provider,
-                    ProviderRole, SpatialExtent, TemporalExtent)
+from pystac import (
+    CatalogType,
+    Collection,
+    Extent,
+    Item,
+    Provider,
+    ProviderRole,
+    SpatialExtent,
+    TemporalExtent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +39,11 @@ FORMATS = ["grib2", "bufr"]
 PRESSURE_LEVELS = [1000, 925, 850, 700, 500, 300, 250, 200, 50]
 
 xpr = re.compile(
-    r"(?P<reference_datetime>\d{10})0000-(?P<step>\d+[h|m])-(?P<stream>\w+)-(?P<type>\w+).(?P<format>\w+)"
+    r"(?P<reference_datetime>\d{10})0000-"
+    r"(?P<step>\d+[h|m])-"
+    r"(?P<stream>\w+)-"
+    r"(?P<type>\w+)."
+    r"(?P<format>\w+)"
 )
 
 
@@ -55,7 +67,9 @@ class Parts:
             d["reference_datetime"], "%Y%m%d%H"
         )
         d["filename"] = filename
-        return cls(**d)
+        #  error: Argument 1 to "Parts" has incompatible type
+        # "**Dict[str, Union[str, Any]]"; expected "datetime"
+        return cls(**d)  # type: ignore
 
     @property
     def item_id(self) -> str:
@@ -71,10 +85,10 @@ class Parts:
     @property
     def offset(self) -> datetime.timedelta:
         v, u = self.step[:-1], self.step[-1]
-        v = int(v)
+        offset_value = int(v)
 
         if u == "h":
-            offset = datetime.timedelta(hours=v)
+            offset = datetime.timedelta(hours=offset_value)
         else:
             # TODO: this is wrong. Need to something like a DateOffset
             raise NotImplementedError()
@@ -82,7 +96,9 @@ class Parts:
         return offset
 
 
-def create_collection(thumbnail=None, extra_fields: dict[str, Any] | None = None) -> Collection:
+def create_collection(
+    thumbnail=None, extra_fields: dict[str, Any] | None = None
+) -> Collection:
     """Create a STAC Collection
 
     This function includes logic to extract all relevant metadata from
@@ -106,13 +122,13 @@ def create_collection(thumbnail=None, extra_fields: dict[str, Any] | None = None
             rel=pystac.RelType.LICENSE,
             target="https://creativecommons.org/licenses/by/4.0/",
             media_type="text/html",
-            title="CC-BY-4.0 license"
+            title="CC-BY-4.0 license",
         ),
         pystac.Link(
             rel="documentation",
             target="https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time",
             media_type="text/html",
-            title="ECMWF Open Data (Real Time) documentation"
+            title="ECMWF Open Data (Real Time) documentation",
         ),
     ]
 
@@ -168,7 +184,6 @@ def create_collection(thumbnail=None, extra_fields: dict[str, Any] | None = None
     return collection
 
 
-
 def item_key(filename) -> tuple[datetime.datetime, str, str]:
     """
     Gives tuple of attributes in a filename used to determine its item.
@@ -218,7 +233,10 @@ def create_item(asset_hrefs: list[str]) -> Item:
     part = parts[0]
     for i, other in enumerate(parts):
         if part.item_id != other.item_id:
-            raise ValueError(f"Asset {i} has different Item ID ({part.item_id} != {other.item_id}). URL = {asset_hrefs[i]}")
+            raise ValueError(
+                f"Asset {i} has different Item ID ({part.item_id} != {other.item_id}). "
+                f"URL = {asset_hrefs[i]}"
+            )
 
     geometry = {
         "type": "Polygon",
