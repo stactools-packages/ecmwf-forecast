@@ -6,7 +6,7 @@ import itertools
 import logging
 import pathlib
 import re
-from typing import Any
+from typing import Any, List, Optional
 
 import fsspec
 import pystac
@@ -65,7 +65,7 @@ class Parts:
         d = m.groupdict()
         d["reference_datetime"] = datetime.datetime.strptime(
             d["reference_datetime"], "%Y%m%d%H"
-        )
+        )  # type: ignore
         d["filename"] = filename
         #  error: Argument 1 to "Parts" has incompatible type
         # "**Dict[str, Union[str, Any]]"; expected "datetime"
@@ -132,9 +132,12 @@ def create_collection(
         ),
     ]
 
+    start_datetime: List[Optional[datetime.datetime]] = [None]
+    end_datetime: List[Optional[datetime.datetime]] = [None]
+
     extent = Extent(
         SpatialExtent([[-180.0, 90.0, 180.0, -90.0]]),
-        TemporalExtent([[None, None]]),
+        TemporalExtent([start_datetime, end_datetime]),
     )
     keywords = [
         "ECMWF",
@@ -156,7 +159,7 @@ def create_collection(
 
     # Summaries
     collection.summaries.maxcount = 50
-    summaries = {
+    summaries: dict[str, list[Any]] = {
         "ecmwf:reference_times": REFERENCE_TIMES,
         "ecmwf:streams": STREAMS,
         "ecmwf:steps": STEPS,
@@ -250,7 +253,7 @@ def create_item(asset_hrefs: list[str]) -> Item:
             ),
         ),
     }
-    bounds = (-180.0, -90.0, 180.0, 90.0)
+    bounds = [-180.0, -90.0, 180.0, 90.0]
 
     item = pystac.Item(
         part.item_id,

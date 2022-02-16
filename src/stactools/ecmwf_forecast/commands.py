@@ -64,12 +64,15 @@ def create_ecmwfforecast_command(cli):
             destination (str): An HREF for the STAC Collection
         """
         if storage_options:
-            storage_options = dict(
+            storage_options2 = dict(
                 [x.split("=", 1) for x in storage_options.split(",")]
             )
+            options = storage_options2
+        else:
+            options = None
 
         item = stac.create_item_from_pattern(
-            source_pattern, protocol=protocol, storage_options=storage_options
+            source_pattern, protocol=protocol, storage_options=options
         )
 
         item.save_object(dest_href=destination)
