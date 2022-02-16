@@ -11,19 +11,19 @@ env:
   DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  codecov:
-    name: codecov
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Execute linters and test suites
-        run: ./docker/cibuild
-      - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          fail_ci_if_error: false
+  # codecov:
+  #   name: codecov
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Execute linters and test suites
+  #       run: ./docker/cibuild
+  #     - name: Upload All coverage to Codecov
+  #       uses: codecov/codecov-action@v1
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         file: ./coverage.xml
+  #         fail_ci_if_error: false
   python-matrix:
     name: python-matrix
     runs-on: ubuntu-latest
