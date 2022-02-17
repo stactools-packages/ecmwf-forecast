@@ -38,6 +38,9 @@ def test_parts(filename):
     assert result.format == "grib2"
     assert result.filename == filename
     assert result.name == "20220202000000-0h-enfo-ef.grib2"
+    if not filename.startswith("20220202000000-0h"):
+        assert result.filename != result.name
+        assert result.prefix == filename.rsplit("/", 1)[0] + "/"
 
 
 @pytest.mark.parametrize(

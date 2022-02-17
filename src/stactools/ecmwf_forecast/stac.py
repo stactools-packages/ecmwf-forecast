@@ -43,7 +43,6 @@ class Parts:
     type: str
     format: str
     filename: str
-    name: str
 
     @classmethod
     def from_filename(cls, filename: str) -> "Parts":
@@ -56,7 +55,6 @@ class Parts:
         d["reference_datetime"] = datetime.datetime.strptime(
             d["reference_datetime"], "%Y%m%d%H"
         )  # type: ignore
-        d["name"] = name
         #  error: Argument 1 to "Parts" has incompatible type
         # "**Dict[str, Union[str, Any]]"; expected "datetime"
         return cls(**d)  # type: ignore
@@ -84,6 +82,16 @@ class Parts:
             raise NotImplementedError()
 
         return offset
+
+    @property
+    def prefix(self) -> str | None:
+        if self.filename.count("/"):
+            prefix = self.filename.rsplit("/", 1)[0]
+            return prefix + "/"
+
+    @property
+    def name(self):
+        return pathlib.Path(self.filename).name
 
 
 def create_collection(
@@ -304,11 +312,12 @@ def list_sibling_assets(filename) -> list[Parts]:
 
     # mypy failing on python 3.7
     combinations = constants.get_combinations()  # type: ignore
-    d = {k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)}
+    d = {k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)}  # type: ignore
     combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
+    prefix = p.prefix or ""
 
     other_files = [
-        f"{p.reference_datetime:%Y%m%d%H}0000-{combo.step}-{combo.stream}"
+        f"{prefix}{p.reference_datetime:%Y%m%d%H}0000-{combo.step}-{combo.stream}"
         f"-{combo.type}.{combo.format}"
         for combo in combos
     ]
