@@ -100,13 +100,12 @@ def get_combinations(fmt="grib2"):
                             )
                     elif stream in {"scda", "scwv"}:
                         if type_ == "fc":
-                            # TODO: check this endpoint!
                             combinations.extend(
                                 [
                                     Combination(
                                         fmt, type_, reference_time, stream, f"{i}h"
                                     )
-                                    for i in range(0, 90, 3)
+                                    for i in range(0, 91, 3)  # include 90
                                 ]
                             )
                 elif reference_time == "00":
