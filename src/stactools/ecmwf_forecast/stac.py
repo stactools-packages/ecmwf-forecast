@@ -71,6 +71,10 @@ class Parts:
         )
 
     @property
+    def asset_id(self) -> str:
+        return f"{self.step}-{self.format}"
+
+    @property
     def offset(self) -> datetime.timedelta:
         v, u = self.step[:-1], self.step[-1]
         offset_value = int(v)
@@ -282,7 +286,7 @@ def create_item(asset_hrefs: list[str]) -> Item:
             raise ValueError(f"Bad extension: {p.format}")
 
         item.add_asset(
-            f"{p.step}-{p.format}",
+            p.asset_id,
             pystac.Asset(
                 href,
                 media_type=media_type,

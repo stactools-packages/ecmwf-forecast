@@ -38,6 +38,8 @@ def test_parts(filename):
     assert result.format == "grib2"
     assert result.filename == filename
     assert result.name == "20220202000000-0h-enfo-ef.grib2"
+    assert result.item_id == "ecmwf-2022-02-02T00-enfo-ef"
+    assert result.asset_id == "0h-grib2"
     if not filename.startswith("20220202000000-0h"):
         assert result.filename != result.name
         assert result.prefix == filename.rsplit("/", 1)[0] + "/"

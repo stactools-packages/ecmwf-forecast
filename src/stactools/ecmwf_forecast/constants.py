@@ -95,7 +95,7 @@ def get_combinations(fmt="grib2"):
                                     Combination(
                                         fmt, type_, reference_time, stream, f"{i}h"
                                     )
-                                    for i in range(0, 144, 3)
+                                    for i in range(0, 145, 3)  # include 144
                                 ]
                             )
                     elif stream in {"scda", "scwv"}:
