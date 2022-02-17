@@ -9,7 +9,6 @@ import pathlib
 import re
 from typing import Any
 
-import fsspec
 import pystac
 from pystac import (
     CatalogType,
@@ -252,7 +251,7 @@ def create_item_from_representative_asset(asset_href: str) -> Item:
     >>> stac.create_item_from_representative_asset(href)
     """
     siblings = list_sibling_assets(asset_href)
-    return _create_item_from_parts(siblings) 
+    return _create_item_from_parts(siblings)
 
 
 def _create_item_from_parts(parts: list[Parts]) -> Item:

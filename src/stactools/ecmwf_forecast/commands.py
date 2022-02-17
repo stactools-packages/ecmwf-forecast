@@ -59,7 +59,9 @@ def create_ecmwfforecast_command(cli):
             source (str): HREF of the Asset associated with the Item
             destination (str): An HREF for the STAC Collection
         """
-        item = stac.create_item_from_representative_asset(representative_href,)
+        item = stac.create_item_from_representative_asset(
+            representative_href,
+        )
         item.save_object(dest_href=destination)
 
         return None
