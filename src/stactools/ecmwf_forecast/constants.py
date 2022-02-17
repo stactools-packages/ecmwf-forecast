@@ -11,7 +11,7 @@ class Combination(typing.NamedTuple):
 
 
 REFERENCE_TIMES = ["00", "06", "12", "18"]
-STREAMS = ["oper", "enfo", "waef", "scda", "scwv", "mmsf"]
+STREAMS = ["oper", "enfo", "waef", "scda", "scwv", "mmsf", "wave"]
 # maybe do steps as two Intervals? hour_steps, minute_steps?
 STEPS = (
     [f"{i}h" for i in range(0, 144, 3)]
@@ -68,7 +68,7 @@ def get_combinations(fmt="grib2"):
                                     ),
                                 ]
                             )
-                    elif stream in {"oper", "waef"}:
+                    elif stream in {"oper", "wave"}:
                         if type_ == "fc":
                             combinations.extend(
                                 [
