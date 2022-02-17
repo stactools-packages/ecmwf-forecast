@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import dataclasses
+import operator
 import datetime
 import itertools
 import logging
 import pathlib
 import re
-from typing import Any, List, Optional
+from typing import Any
 
 import fsspec
 import pystac
@@ -20,23 +21,10 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
+from . import constants
 
 logger = logging.getLogger(__name__)
 
-# for the summaries?
-REFERENCE_TIMES = ["00", "06", "12", "18"]
-STREAMS = ["oper", "enfo", "waef", "scda", "scwv", "mmsf"]
-
-# maybe do steps as two Intervals? hour_steps, months_steps?
-STEPS = (
-    [f"{i}h" for i in range(0, 144, 3)]
-    + [f"{i}h" for i in range(144, 361, 6)]
-    + [f"{i}m" for i in range(1, 8)]  # TODO: double check this endpoint, and below
-)
-STEP_UNITS = ["h", "m"]
-TYPES = ["fc", "ef", "ep", "tf"]
-FORMATS = ["grib2", "bufr"]
-PRESSURE_LEVELS = [1000, 925, 850, 700, 500, 300, 250, 200, 50]
 
 xpr = re.compile(
     r"(?P<reference_datetime>\d{10})0000-"
@@ -55,18 +43,20 @@ class Parts:
     type: str
     format: str
     filename: str
+    name: str
 
     @classmethod
     def from_filename(cls, filename: str) -> "Parts":
-        filename = pathlib.Path(filename).name
-        m = xpr.match(filename)
+        name = pathlib.Path(filename).name
+        m = xpr.match(name)
         if not m:
-            raise ValueError(filename)
+            raise ValueError(name)
         d = m.groupdict()
+        d["filename"] = filename
         d["reference_datetime"] = datetime.datetime.strptime(
             d["reference_datetime"], "%Y%m%d%H"
         )  # type: ignore
-        d["filename"] = filename
+        d["name"] = name
         #  error: Argument 1 to "Parts" has incompatible type
         # "**Dict[str, Union[str, Any]]"; expected "datetime"
         return cls(**d)  # type: ignore
@@ -132,12 +122,9 @@ def create_collection(
         ),
     ]
 
-    start_datetime: List[Optional[datetime.datetime]] = [None]
-    end_datetime: List[Optional[datetime.datetime]] = [None]
-
     extent = Extent(
         SpatialExtent([[-180.0, 90.0, 180.0, -90.0]]),
-        TemporalExtent([start_datetime, end_datetime]),
+        TemporalExtent([[None, None]]),  # type: ignore
     )
     keywords = [
         "ECMWF",
@@ -160,11 +147,11 @@ def create_collection(
     # Summaries
     collection.summaries.maxcount = 50
     summaries: dict[str, list[Any]] = {
-        "ecmwf:reference_times": REFERENCE_TIMES,
-        "ecmwf:streams": STREAMS,
-        "ecmwf:steps": STEPS,
-        "ecmwf:types": TYPES,
-        "ecmwf:pressure_levels": PRESSURE_LEVELS,
+        "ecmwf:reference_times": constants.REFERENCE_TIMES,
+        "ecmwf:streams": constants.STREAMS,
+        "ecmwf:steps": constants.STEPS,
+        "ecmwf:types": constants.TYPES,
+        "ecmwf:pressure_levels": constants.PRESSURE_LEVELS,
     }
     for k, v in summaries.items():
         collection.summaries.add(k, v)
@@ -193,7 +180,7 @@ def item_key(filename) -> tuple[datetime.datetime, str, str]:
 
     This uses the
 
-    * reference daetime
+    * reference datetime
     * stream
     * type
     """
@@ -296,3 +283,38 @@ def create_item(asset_hrefs: list[str]) -> Item:
         )
 
     return item
+
+
+def _assets_key(combination):
+    return combination[:4]
+
+
+def list_sibling_assets(filename) -> list[Parts]:
+    """
+    List the other files that belong in the same item as `file` (have the same item_id).
+
+    This is based purely on the filename. It doesn't list any directories to determine whether
+    the other files are present.
+
+    Examples
+    --------
+    >>> siblings = list_sibling_assets("20220202000000-0h-enfo-ef.grib2")
+    """
+    p = Parts.from_filename(filename)
+
+    combinations = constants.get_combinations()
+    d = {k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)}
+    combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
+
+    other_files = [
+        f"{p.reference_datetime:%Y%m%d%H}0000-{combo.step}-{combo.stream}"
+        f"-{combo.type}.{combo.format}"
+        for combo in combos
+    ]
+
+    if p.format == "grib2":
+        other_files.extend([file.rsplit(".", 1)[0] + ".index" for file in other_files])
+    parts = [Parts.from_filename(other_file) for other_file in other_files]
+    parts = sorted(parts, key=operator.attrgetter("step"))
+
+    return parts

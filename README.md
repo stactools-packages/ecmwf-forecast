@@ -1,6 +1,6 @@
 # ecmwf-forecast
 
-Create STAC metadata for [EMMWF Open Data - Real Time](https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time).
+Create STAC metadata for [ECMWF Open Data - Real Time](https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time).
 
 
 ## Planetary Computer collection
