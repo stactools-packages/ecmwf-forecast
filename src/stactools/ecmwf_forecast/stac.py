@@ -88,6 +88,7 @@ class Parts:
         if self.filename.count("/"):
             prefix = self.filename.rsplit("/", 1)[0]
             return prefix + "/"
+        return None
 
     @property
     def name(self):
