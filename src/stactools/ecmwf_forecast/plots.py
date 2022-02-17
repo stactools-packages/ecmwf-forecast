@@ -38,8 +38,10 @@ def plot_combinations(combinations):
         ax=ax,
         linewidths=0.1,
     )
-    for tick in ax.get_xticklabels():
+    for i, tick in enumerate(ax.get_xticklabels()):
         tick.set_rotation(55)
+        if (i % 2) != 0:
+            tick.set_visible(False)
 
     properties = matplotlib.font_manager.FontProperties(family="monospace")
     for label in ax.get_yticklabels():
