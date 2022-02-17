@@ -24,7 +24,10 @@ FORMATS = ["grib2", "bufr"]
 PRESSURE_LEVELS = [1000, 925, 850, 700, 500, 300, 250, 200, 50]
 
 
-@functools.lru_cache
+# mypy failing on python 3.7
+
+
+@functools.lru_cache  # type: ignore
 def get_combinations(fmt="grib2"):
     combinations = []
     if fmt != "grib2":

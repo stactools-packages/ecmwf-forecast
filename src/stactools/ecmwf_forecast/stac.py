@@ -302,7 +302,8 @@ def list_sibling_assets(filename) -> list[Parts]:
     """
     p = Parts.from_filename(filename)
 
-    combinations = constants.get_combinations()
+    # mypy failing on python 3.7
+    combinations = constants.get_combinations()  # type: ignore
     d = {k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)}
     combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
 
