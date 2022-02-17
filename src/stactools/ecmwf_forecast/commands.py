@@ -79,15 +79,22 @@ def create_ecmwfforecast_command(cli):
 
         return None
 
-    @ecmwfforecast.command("plot-combinations", short_help="Plot the valid combinations")
+    @ecmwfforecast.command(
+        "plot-combinations", short_help="Plot the valid combinations"
+    )
     @click.option("-d", "--destination", default="ecmwf-forecast-coverage.png")
     def _(destination):
         from stactools.ecmwf_forecast import constants, plots
         import matplotlib.pyplot as plt
 
         plots.plot_combinations(constants.get_combinations())
-        plt.savefig(destination, format="png", bbox_inches="tight",
-                    pad_inches=0, dpi=200, transparent=False)
-
+        plt.savefig(
+            destination,
+            format="png",
+            bbox_inches="tight",
+            pad_inches=0,
+            dpi=200,
+            transparent=False,
+        )
 
     return ecmwfforecast
