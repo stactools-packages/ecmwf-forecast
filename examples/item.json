@@ -1,0 +1,1409 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "ecmwf-2022-02-01T00-enfo-ef",
+  "properties": {
+    "start_datetime": "2022-02-01T00:00:00Z",
+    "end_datetime": "2022-02-16T00:00:00Z",
+    "ecmwf:stream": "enfo",
+    "ecmwf:type": "ef",
+    "datetime": "2022-02-01T00:00:00Z"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          180.0,
+          -90.0
+        ],
+        [
+          180.0,
+          90.0
+        ],
+        [
+          -180.0,
+          90.0
+        ],
+        [
+          -180.0,
+          -90.0
+        ],
+        [
+          180.0,
+          -90.0
+        ]
+      ]
+    ]
+  },
+  "links": [],
+  "assets": {
+    "0h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-0h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "0h",
+      "roles": [
+        "data"
+      ]
+    },
+    "0h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-0h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "0h",
+      "roles": [
+        "index"
+      ]
+    },
+    "102h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-102h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "102h",
+      "roles": [
+        "data"
+      ]
+    },
+    "102h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-102h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "102h",
+      "roles": [
+        "index"
+      ]
+    },
+    "105h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-105h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "105h",
+      "roles": [
+        "data"
+      ]
+    },
+    "105h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-105h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "105h",
+      "roles": [
+        "index"
+      ]
+    },
+    "108h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-108h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "108h",
+      "roles": [
+        "data"
+      ]
+    },
+    "108h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-108h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "108h",
+      "roles": [
+        "index"
+      ]
+    },
+    "111h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-111h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "111h",
+      "roles": [
+        "data"
+      ]
+    },
+    "111h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-111h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "111h",
+      "roles": [
+        "index"
+      ]
+    },
+    "114h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-114h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "114h",
+      "roles": [
+        "data"
+      ]
+    },
+    "114h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-114h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "114h",
+      "roles": [
+        "index"
+      ]
+    },
+    "117h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-117h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "117h",
+      "roles": [
+        "data"
+      ]
+    },
+    "117h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-117h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "117h",
+      "roles": [
+        "index"
+      ]
+    },
+    "120h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-120h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "120h",
+      "roles": [
+        "data"
+      ]
+    },
+    "120h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-120h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "120h",
+      "roles": [
+        "index"
+      ]
+    },
+    "123h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-123h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "123h",
+      "roles": [
+        "data"
+      ]
+    },
+    "123h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-123h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "123h",
+      "roles": [
+        "index"
+      ]
+    },
+    "126h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-126h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "126h",
+      "roles": [
+        "data"
+      ]
+    },
+    "126h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-126h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "126h",
+      "roles": [
+        "index"
+      ]
+    },
+    "129h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-129h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "129h",
+      "roles": [
+        "data"
+      ]
+    },
+    "129h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-129h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "129h",
+      "roles": [
+        "index"
+      ]
+    },
+    "12h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-12h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "12h",
+      "roles": [
+        "data"
+      ]
+    },
+    "12h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-12h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "12h",
+      "roles": [
+        "index"
+      ]
+    },
+    "132h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-132h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "132h",
+      "roles": [
+        "data"
+      ]
+    },
+    "132h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-132h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "132h",
+      "roles": [
+        "index"
+      ]
+    },
+    "135h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-135h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "135h",
+      "roles": [
+        "data"
+      ]
+    },
+    "135h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-135h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "135h",
+      "roles": [
+        "index"
+      ]
+    },
+    "138h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-138h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "138h",
+      "roles": [
+        "data"
+      ]
+    },
+    "138h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-138h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "138h",
+      "roles": [
+        "index"
+      ]
+    },
+    "141h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-141h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "141h",
+      "roles": [
+        "data"
+      ]
+    },
+    "141h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-141h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "141h",
+      "roles": [
+        "index"
+      ]
+    },
+    "144h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-144h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "144h",
+      "roles": [
+        "data"
+      ]
+    },
+    "144h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-144h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "144h",
+      "roles": [
+        "index"
+      ]
+    },
+    "150h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-150h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "150h",
+      "roles": [
+        "data"
+      ]
+    },
+    "150h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-150h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "150h",
+      "roles": [
+        "index"
+      ]
+    },
+    "156h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-156h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "156h",
+      "roles": [
+        "data"
+      ]
+    },
+    "156h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-156h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "156h",
+      "roles": [
+        "index"
+      ]
+    },
+    "15h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-15h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "15h",
+      "roles": [
+        "data"
+      ]
+    },
+    "15h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-15h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "15h",
+      "roles": [
+        "index"
+      ]
+    },
+    "162h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-162h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "162h",
+      "roles": [
+        "data"
+      ]
+    },
+    "162h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-162h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "162h",
+      "roles": [
+        "index"
+      ]
+    },
+    "168h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-168h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "168h",
+      "roles": [
+        "data"
+      ]
+    },
+    "168h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-168h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "168h",
+      "roles": [
+        "index"
+      ]
+    },
+    "174h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-174h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "174h",
+      "roles": [
+        "data"
+      ]
+    },
+    "174h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-174h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "174h",
+      "roles": [
+        "index"
+      ]
+    },
+    "180h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-180h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "180h",
+      "roles": [
+        "data"
+      ]
+    },
+    "180h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-180h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "180h",
+      "roles": [
+        "index"
+      ]
+    },
+    "186h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-186h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "186h",
+      "roles": [
+        "data"
+      ]
+    },
+    "186h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-186h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "186h",
+      "roles": [
+        "index"
+      ]
+    },
+    "18h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-18h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "18h",
+      "roles": [
+        "data"
+      ]
+    },
+    "18h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-18h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "18h",
+      "roles": [
+        "index"
+      ]
+    },
+    "192h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-192h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "192h",
+      "roles": [
+        "data"
+      ]
+    },
+    "192h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-192h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "192h",
+      "roles": [
+        "index"
+      ]
+    },
+    "198h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-198h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "198h",
+      "roles": [
+        "data"
+      ]
+    },
+    "198h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-198h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "198h",
+      "roles": [
+        "index"
+      ]
+    },
+    "204h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-204h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "204h",
+      "roles": [
+        "data"
+      ]
+    },
+    "204h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-204h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "204h",
+      "roles": [
+        "index"
+      ]
+    },
+    "210h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-210h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "210h",
+      "roles": [
+        "data"
+      ]
+    },
+    "210h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-210h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "210h",
+      "roles": [
+        "index"
+      ]
+    },
+    "216h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-216h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "216h",
+      "roles": [
+        "data"
+      ]
+    },
+    "216h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-216h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "216h",
+      "roles": [
+        "index"
+      ]
+    },
+    "21h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-21h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "21h",
+      "roles": [
+        "data"
+      ]
+    },
+    "21h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-21h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "21h",
+      "roles": [
+        "index"
+      ]
+    },
+    "222h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-222h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "222h",
+      "roles": [
+        "data"
+      ]
+    },
+    "222h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-222h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "222h",
+      "roles": [
+        "index"
+      ]
+    },
+    "228h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-228h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "228h",
+      "roles": [
+        "data"
+      ]
+    },
+    "228h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-228h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "228h",
+      "roles": [
+        "index"
+      ]
+    },
+    "234h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-234h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "234h",
+      "roles": [
+        "data"
+      ]
+    },
+    "234h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-234h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "234h",
+      "roles": [
+        "index"
+      ]
+    },
+    "240h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-240h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "240h",
+      "roles": [
+        "data"
+      ]
+    },
+    "240h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-240h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "240h",
+      "roles": [
+        "index"
+      ]
+    },
+    "246h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-246h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "246h",
+      "roles": [
+        "data"
+      ]
+    },
+    "246h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-246h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "246h",
+      "roles": [
+        "index"
+      ]
+    },
+    "24h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-24h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "24h",
+      "roles": [
+        "data"
+      ]
+    },
+    "24h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-24h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "24h",
+      "roles": [
+        "index"
+      ]
+    },
+    "252h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-252h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "252h",
+      "roles": [
+        "data"
+      ]
+    },
+    "252h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-252h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "252h",
+      "roles": [
+        "index"
+      ]
+    },
+    "258h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-258h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "258h",
+      "roles": [
+        "data"
+      ]
+    },
+    "258h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-258h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "258h",
+      "roles": [
+        "index"
+      ]
+    },
+    "264h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-264h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "264h",
+      "roles": [
+        "data"
+      ]
+    },
+    "264h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-264h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "264h",
+      "roles": [
+        "index"
+      ]
+    },
+    "270h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-270h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "270h",
+      "roles": [
+        "data"
+      ]
+    },
+    "270h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-270h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "270h",
+      "roles": [
+        "index"
+      ]
+    },
+    "276h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-276h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "276h",
+      "roles": [
+        "data"
+      ]
+    },
+    "276h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-276h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "276h",
+      "roles": [
+        "index"
+      ]
+    },
+    "27h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-27h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "27h",
+      "roles": [
+        "data"
+      ]
+    },
+    "27h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-27h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "27h",
+      "roles": [
+        "index"
+      ]
+    },
+    "282h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-282h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "282h",
+      "roles": [
+        "data"
+      ]
+    },
+    "282h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-282h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "282h",
+      "roles": [
+        "index"
+      ]
+    },
+    "288h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-288h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "288h",
+      "roles": [
+        "data"
+      ]
+    },
+    "288h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-288h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "288h",
+      "roles": [
+        "index"
+      ]
+    },
+    "294h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-294h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "294h",
+      "roles": [
+        "data"
+      ]
+    },
+    "294h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-294h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "294h",
+      "roles": [
+        "index"
+      ]
+    },
+    "300h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-300h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "300h",
+      "roles": [
+        "data"
+      ]
+    },
+    "300h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-300h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "300h",
+      "roles": [
+        "index"
+      ]
+    },
+    "306h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-306h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "306h",
+      "roles": [
+        "data"
+      ]
+    },
+    "306h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-306h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "306h",
+      "roles": [
+        "index"
+      ]
+    },
+    "30h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-30h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "30h",
+      "roles": [
+        "data"
+      ]
+    },
+    "30h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-30h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "30h",
+      "roles": [
+        "index"
+      ]
+    },
+    "312h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-312h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "312h",
+      "roles": [
+        "data"
+      ]
+    },
+    "312h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-312h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "312h",
+      "roles": [
+        "index"
+      ]
+    },
+    "318h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-318h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "318h",
+      "roles": [
+        "data"
+      ]
+    },
+    "318h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-318h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "318h",
+      "roles": [
+        "index"
+      ]
+    },
+    "324h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-324h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "324h",
+      "roles": [
+        "data"
+      ]
+    },
+    "324h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-324h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "324h",
+      "roles": [
+        "index"
+      ]
+    },
+    "330h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-330h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "330h",
+      "roles": [
+        "data"
+      ]
+    },
+    "330h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-330h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "330h",
+      "roles": [
+        "index"
+      ]
+    },
+    "336h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-336h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "336h",
+      "roles": [
+        "data"
+      ]
+    },
+    "336h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-336h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "336h",
+      "roles": [
+        "index"
+      ]
+    },
+    "33h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-33h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "33h",
+      "roles": [
+        "data"
+      ]
+    },
+    "33h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-33h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "33h",
+      "roles": [
+        "index"
+      ]
+    },
+    "342h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-342h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "342h",
+      "roles": [
+        "data"
+      ]
+    },
+    "342h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-342h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "342h",
+      "roles": [
+        "index"
+      ]
+    },
+    "348h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-348h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "348h",
+      "roles": [
+        "data"
+      ]
+    },
+    "348h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-348h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "348h",
+      "roles": [
+        "index"
+      ]
+    },
+    "354h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-354h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "354h",
+      "roles": [
+        "data"
+      ]
+    },
+    "354h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-354h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "354h",
+      "roles": [
+        "index"
+      ]
+    },
+    "360h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-360h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "360h",
+      "roles": [
+        "data"
+      ]
+    },
+    "360h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-360h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "360h",
+      "roles": [
+        "index"
+      ]
+    },
+    "36h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-36h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "36h",
+      "roles": [
+        "data"
+      ]
+    },
+    "36h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-36h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "36h",
+      "roles": [
+        "index"
+      ]
+    },
+    "39h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-39h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "39h",
+      "roles": [
+        "data"
+      ]
+    },
+    "39h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-39h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "39h",
+      "roles": [
+        "index"
+      ]
+    },
+    "3h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-3h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "3h",
+      "roles": [
+        "data"
+      ]
+    },
+    "3h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-3h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "3h",
+      "roles": [
+        "index"
+      ]
+    },
+    "42h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-42h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "42h",
+      "roles": [
+        "data"
+      ]
+    },
+    "42h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-42h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "42h",
+      "roles": [
+        "index"
+      ]
+    },
+    "45h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-45h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "45h",
+      "roles": [
+        "data"
+      ]
+    },
+    "45h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-45h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "45h",
+      "roles": [
+        "index"
+      ]
+    },
+    "48h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-48h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "48h",
+      "roles": [
+        "data"
+      ]
+    },
+    "48h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-48h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "48h",
+      "roles": [
+        "index"
+      ]
+    },
+    "51h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-51h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "51h",
+      "roles": [
+        "data"
+      ]
+    },
+    "51h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-51h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "51h",
+      "roles": [
+        "index"
+      ]
+    },
+    "54h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-54h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "54h",
+      "roles": [
+        "data"
+      ]
+    },
+    "54h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-54h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "54h",
+      "roles": [
+        "index"
+      ]
+    },
+    "57h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-57h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "57h",
+      "roles": [
+        "data"
+      ]
+    },
+    "57h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-57h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "57h",
+      "roles": [
+        "index"
+      ]
+    },
+    "60h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-60h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "60h",
+      "roles": [
+        "data"
+      ]
+    },
+    "60h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-60h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "60h",
+      "roles": [
+        "index"
+      ]
+    },
+    "63h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-63h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "63h",
+      "roles": [
+        "data"
+      ]
+    },
+    "63h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-63h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "63h",
+      "roles": [
+        "index"
+      ]
+    },
+    "66h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-66h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "66h",
+      "roles": [
+        "data"
+      ]
+    },
+    "66h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-66h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "66h",
+      "roles": [
+        "index"
+      ]
+    },
+    "69h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-69h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "69h",
+      "roles": [
+        "data"
+      ]
+    },
+    "69h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-69h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "69h",
+      "roles": [
+        "index"
+      ]
+    },
+    "6h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-6h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "6h",
+      "roles": [
+        "data"
+      ]
+    },
+    "6h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-6h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "6h",
+      "roles": [
+        "index"
+      ]
+    },
+    "72h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-72h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "72h",
+      "roles": [
+        "data"
+      ]
+    },
+    "72h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-72h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "72h",
+      "roles": [
+        "index"
+      ]
+    },
+    "75h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-75h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "75h",
+      "roles": [
+        "data"
+      ]
+    },
+    "75h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-75h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "75h",
+      "roles": [
+        "index"
+      ]
+    },
+    "78h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-78h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "78h",
+      "roles": [
+        "data"
+      ]
+    },
+    "78h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-78h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "78h",
+      "roles": [
+        "index"
+      ]
+    },
+    "81h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-81h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "81h",
+      "roles": [
+        "data"
+      ]
+    },
+    "81h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-81h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "81h",
+      "roles": [
+        "index"
+      ]
+    },
+    "84h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-84h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "84h",
+      "roles": [
+        "data"
+      ]
+    },
+    "84h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-84h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "84h",
+      "roles": [
+        "index"
+      ]
+    },
+    "87h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-87h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "87h",
+      "roles": [
+        "data"
+      ]
+    },
+    "87h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-87h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "87h",
+      "roles": [
+        "index"
+      ]
+    },
+    "90h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-90h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "90h",
+      "roles": [
+        "data"
+      ]
+    },
+    "90h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-90h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "90h",
+      "roles": [
+        "index"
+      ]
+    },
+    "93h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-93h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "93h",
+      "roles": [
+        "data"
+      ]
+    },
+    "93h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-93h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "93h",
+      "roles": [
+        "index"
+      ]
+    },
+    "96h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-96h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "96h",
+      "roles": [
+        "data"
+      ]
+    },
+    "96h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-96h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "96h",
+      "roles": [
+        "index"
+      ]
+    },
+    "99h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-99h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "99h",
+      "roles": [
+        "data"
+      ]
+    },
+    "99h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-99h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "99h",
+      "roles": [
+        "index"
+      ]
+    },
+    "9h-grib2": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-9h-enfo-ef.grib2",
+      "type": "application/wmo-GRIB2",
+      "ecmwf:step": "9h",
+      "roles": [
+        "data"
+      ]
+    },
+    "9h-index": {
+      "href": "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-9h-enfo-ef.index",
+      "type": "application/x-ndjson",
+      "ecmwf:step": "9h",
+      "roles": [
+        "index"
+      ]
+    }
+  },
+  "bbox": [
+    -180.0,
+    -90.0,
+    180.0,
+    90.0
+  ],
+  "stac_extensions": []
+}
