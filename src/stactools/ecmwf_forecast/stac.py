@@ -210,13 +210,6 @@ def group_assets(asset_hrefs: list[str]):
     return grouped
 
 
-def create_item_from_pattern(source_pattern, protocol, storage_options):
-    storage_options = storage_options or {}
-    fs = fsspec.filesystem(protocol, **storage_options)
-    files = fs.glob(source_pattern)
-    return create_item(files)
-
-
 def create_item(asset_hrefs: list[str]) -> Item:
     """
     Create an item for the hrefs.
