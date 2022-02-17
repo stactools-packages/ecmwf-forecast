@@ -233,12 +233,42 @@ def create_item(asset_hrefs: list[str]) -> Item:
     pystac.Item
     """
     parts = [Parts.from_filename(href) for href in asset_hrefs]
+    return _create_item_from_parts(parts)
+
+
+def create_item_from_representative_asset(asset_href: str) -> Item:
+    """
+    Create an item from a "representative" asset HREF.
+
+    This method takes a single HREF, and uses the guidance from the ECMWF
+    on which assets are published together and belong in the same item.
+
+    Parameters
+    ----------
+    asset_href:
+        The "representative" asset for an item. This should typically be
+        the first asset for the item (e.g. the "-0h" asset for most products).
+
+    Returns
+    -------
+    pystac.Item
+
+    Examples
+    --------
+    >>> href = "ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-0h-enfo-ef.grib2"
+    >>> stac.create_item_from_representative_asset(href)
+    """
+    siblings = list_sibling_assets(asset_href)
+    return _create_item_from_parts(siblings) 
+
+
+def _create_item_from_parts(parts: list[Parts]) -> Item:
     part = parts[0]
     for i, other in enumerate(parts):
         if part.item_id != other.item_id:
             raise ValueError(
                 f"Asset {i} has different Item ID ({part.item_id} != {other.item_id}). "
-                f"URL = {asset_hrefs[i]}"
+                f"URL = {part.filename}"
             )
 
     geometry = {
@@ -253,12 +283,12 @@ def create_item(asset_hrefs: list[str]) -> Item:
             ),
         ),
     }
-    bounds = [-180.0, -90.0, 180.0, 90.0]
+    bbox = [-180.0, -90.0, 180.0, 90.0]
 
     item = pystac.Item(
         part.item_id,
         geometry=geometry,
-        bbox=bounds,
+        bbox=bbox,
         datetime=part.reference_datetime,
         properties={},
     )
@@ -270,9 +300,7 @@ def create_item(asset_hrefs: list[str]) -> Item:
     item.properties["ecmwf:stream"] = part.stream
     item.properties["ecmwf:type"] = part.type
 
-    for href in asset_hrefs:
-        p = Parts.from_filename(href)
-
+    for p in parts:
         if p.format == "grib2":
             media_type = "application/wmo-GRIB2"
             roles = ["data"]
@@ -288,7 +316,7 @@ def create_item(asset_hrefs: list[str]) -> Item:
         item.add_asset(
             p.asset_id,
             pystac.Asset(
-                href,
+                p.filename,
                 media_type=media_type,
                 roles=roles,
                 extra_fields={"ecmwf:step": p.step},

@@ -64,10 +64,9 @@ def create_ecmwfforecast_command(cli):
             destination (str): An HREF for the STAC Collection
         """
         if storage_options:
-            storage_options2 = dict(
+            options = dict(
                 [x.split("=", 1) for x in storage_options.split(",")]
             )
-            options = storage_options2
         else:
             options = None
 
