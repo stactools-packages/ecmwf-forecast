@@ -42,9 +42,17 @@ class Parts:
     type: str
     format: str
     filename: str
+    split_by_step: bool = False
+
+    @property
+    def datetime(self):
+        if self.split_by_step:
+            return self.forecast_datetime
+        else:
+            return self.reference_datetime
 
     @classmethod
-    def from_filename(cls, filename: str) -> "Parts":
+    def from_filename(cls, filename: str, split_by_step=False) -> "Parts":
         name = pathlib.Path(filename).name
         m = xpr.match(name)
         if not m:
@@ -56,22 +64,26 @@ class Parts:
         )  # type: ignore
         #  error: Argument 1 to "Parts" has incompatible type
         # "**Dict[str, Union[str, Any]]"; expected "datetime"
-        return cls(**d)  # type: ignore
+        return cls(**d, split_by_step=split_by_step)  # type: ignore
 
     @property
     def item_id(self) -> str:
-        return "-".join(
-            [
-                "ecmwf",
-                self.reference_datetime.isoformat(timespec="hours"),
-                self.stream,
-                self.type,
-            ]
-        )
+        parts = [
+            "ecmwf",
+            self.reference_datetime.isoformat(timespec="hours"),
+            self.stream,
+            self.type,
+        ]
+        if self.split_by_step:
+            parts.append(self.step)
+        return "-".join(parts)
 
     @property
     def asset_id(self) -> str:
-        return f"{self.step}-{self.format}"
+        if self.split_by_step:
+            return "data" if self.format != "index" else "index"
+        else:
+            return f"{self.step}-{self.format}"
 
     @property
     def offset(self) -> datetime.timedelta:
@@ -85,6 +97,10 @@ class Parts:
             raise NotImplementedError()
 
         return offset
+
+    @property
+    def forecast_datetime(self) -> datetime.datetime:
+        return self.reference_datetime + self.offset
 
     @property
     def prefix(self) -> str | None:
@@ -200,16 +216,33 @@ def item_key(filename) -> tuple[datetime.datetime, str, str]:
     return parts.reference_datetime, parts.stream, parts.type
 
 
-def group_assets(asset_hrefs: list[str]):
+def item_key_split_by_parts(
+    filename,
+) -> tuple[datetime.datetime, str, str, datetime.timedelta]:
+    """
+    Gives tuple of attributes in a filename used to determine its item.
+
+    This uses the
+
+    * reference datetime
+    * stream
+    * type
+    * step
+    """
+    parts = Parts.from_filename(filename)
+    return parts.reference_datetime, parts.stream, parts.type, parts.offset
+
+
+def group_assets(asset_hrefs: list[str], key=item_key):
     """
     Groups a list of asset HREFs according to which item they belong in.
     """
-    asset_hrefs = sorted(asset_hrefs, key=item_key)
-    grouped = itertools.groupby(asset_hrefs, key=item_key)
+    asset_hrefs = sorted(asset_hrefs, key=key)
+    grouped = itertools.groupby(asset_hrefs, key=key)
     return grouped
 
 
-def create_item(asset_hrefs: list[str]) -> Item:
+def create_item(asset_hrefs: list[str], split_by_step=False) -> Item:
     """
     Create an item for the hrefs.
 
@@ -224,8 +257,10 @@ def create_item(asset_hrefs: list[str]) -> Item:
     -------
     pystac.Item
     """
-    parts = [Parts.from_filename(href) for href in asset_hrefs]
-    return _create_item_from_parts(parts)
+    parts = [
+        Parts.from_filename(href, split_by_step=split_by_step) for href in asset_hrefs
+    ]
+    return _create_item_from_parts(parts, split_by_step=split_by_step)
 
 
 def create_item_from_representative_asset(asset_href: str) -> Item:
@@ -254,7 +289,7 @@ def create_item_from_representative_asset(asset_href: str) -> Item:
     return _create_item_from_parts(siblings)
 
 
-def _create_item_from_parts(parts: list[Parts]) -> Item:
+def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     part = parts[0]
     for i, other in enumerate(parts):
         if part.item_id != other.item_id:
@@ -281,16 +316,27 @@ def _create_item_from_parts(parts: list[Parts]) -> Item:
         part.item_id,
         geometry=geometry,
         bbox=bbox,
-        datetime=part.reference_datetime,
+        datetime=part.datetime,
         properties={},
     )
-    offset = max(p.offset for p in parts)
-    item.properties["start_datetime"] = part.reference_datetime.isoformat() + "Z"
-    item.properties["end_datetime"] = (
-        part.reference_datetime + offset
-    ).isoformat() + "Z"
+
     item.properties["ecmwf:stream"] = part.stream
     item.properties["ecmwf:type"] = part.type
+    item.properties["ecmwf:reference_datetime"] = (
+        part.reference_datetime.isoformat() + "Z"
+    )
+    item.properties["ecmwf:forecast_datetime"] = (
+        part.forecast_datetime.isoformat() + "Z"
+    )
+
+    if split_by_step:
+        item.properties["ecmwf:step"] = part.step
+    else:
+        offset = max(p.offset for p in parts)
+        item.properties["start_datetime"] = part.reference_datetime.isoformat() + "Z"
+        item.properties["end_datetime"] = (
+            part.reference_datetime + offset
+        ).isoformat() + "Z"
 
     for p in parts:
         if p.format == "grib2":
@@ -311,7 +357,7 @@ def _create_item_from_parts(parts: list[Parts]) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
-                extra_fields={"ecmwf:step": p.step},
+                extra_fields={"ecmwf:step": p.step} if not split_by_step else {},
             ),
         )
 
