@@ -85,8 +85,10 @@ class Parts:
         else:
             return f"{self.step}-{self.format}"
 
+    # mypy complains about  error: Name "datetime.timedelta" is not defined
+    # for offset and forecast_datetime
     @property
-    def offset(self) -> datetime.timedelta:
+    def offset(self):
         v, u = self.step[:-1], self.step[-1]
         offset_value = int(v)
 
@@ -99,7 +101,7 @@ class Parts:
         return offset
 
     @property
-    def forecast_datetime(self) -> datetime.datetime:
+    def forecast_datetime(self):
         return self.reference_datetime + self.offset
 
     @property
