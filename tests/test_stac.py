@@ -90,3 +90,26 @@ def test_list_sibling_assets(filename):
         assert item.stream == me.stream
         assert item.type == me.type
         assert item.step != me.step
+
+
+def test_split_by_parts():
+    files = [
+        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-0h-enfo-ef.grib2",
+        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-0h-enfo-ef.index",
+        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-3h-enfo-ef.grib2",
+        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-3h-enfo-ef.index",
+    ]
+
+    stac.create_item(files)
+
+    with pytest.raises(ValueError, match="different Item ID"):
+        stac.create_item(files, split_by_step=True)
+
+    i0, i1 = stac.create_item(files[:2], split_by_step=True), stac.create_item(
+        files[2:], split_by_step=True
+    )
+    assert i0.properties["ecmwf:step"] == "0h"
+    assert i1.properties["ecmwf:step"] == "3h"
+    assert i0.assets["data"].extra_fields == {}
+    assert i1.datetime == datetime.datetime(2022, 2, 22, 3)
+    assert i1.id.endswith("3h")
