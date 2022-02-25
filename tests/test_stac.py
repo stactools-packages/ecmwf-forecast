@@ -113,3 +113,15 @@ def test_split_by_parts():
     assert i0.assets["data"].extra_fields == {}
     assert i1.datetime == datetime.datetime(2022, 2, 22, 3)
     assert i1.id.endswith("3h")
+
+
+def test_item_assets():
+    collection = stac.create_collection()
+    assert collection.extra_fields["item_assets"]["data"] == {
+        "roles": ["data"],
+        "type": "application/wmo-GRIB2",
+    }
+    assert collection.extra_fields["item_assets"]["index"] == {
+        "roles": ["index"],
+        "type": "application/x-ndjson",
+    }
