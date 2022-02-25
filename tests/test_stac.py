@@ -117,11 +117,18 @@ def test_split_by_parts():
 
 def test_item_assets():
     collection = stac.create_collection()
-    assert collection.extra_fields["item_assets"]["data"] == {
-        "roles": ["data"],
-        "type": "application/wmo-GRIB2",
-    }
-    assert collection.extra_fields["item_assets"]["index"] == {
-        "roles": ["index"],
-        "type": "application/x-ndjson",
-    }
+    assert collection.extra_fields["item_assets"]["data"]["roles"] == ["data"]
+    assert (
+        collection.extra_fields["item_assets"]["data"]["type"]
+        == "application/wmo-GRIB2"
+    )
+    assert collection.extra_fields["item_assets"]["index"]["roles"] == ["index"]
+    assert (
+        collection.extra_fields["item_assets"]["index"]["type"]
+        == "application/x-ndjson"
+    )
+
+    # assert collection.extra_fields["item_assets"]["index"] == {
+    #     "roles": ["index"],
+    #     "type": "application/x-ndjson",
+    # }

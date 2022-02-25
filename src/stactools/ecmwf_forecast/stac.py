@@ -211,7 +211,7 @@ def create_collection(
                 "title": "GRIB2 data file",
                 "description": (
                     "The forecast data, as a grib2 file. Subsets of the data can be loaded "
-                    "using information from the associated index file.",
+                    "using information from the associated index file."
                 ),
             }
         ),
@@ -222,7 +222,7 @@ def create_collection(
                 "title": "Index file",
                 "description": (
                     "The index file contains information on each message within "
-                    "the GRIB2 file.",
+                    "the GRIB2 file."
                 ),
             }
         ),
