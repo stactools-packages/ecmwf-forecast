@@ -205,10 +205,26 @@ def create_collection(
 
     item_assets = {
         "data": pystac.extensions.item_assets.AssetDefinition(
-            {"type": GRIB2_MEDIA_TYPE, "roles": ["data"]}
+            {
+                "type": GRIB2_MEDIA_TYPE,
+                "roles": ["data"],
+                "title": "GRIB2 data file",
+                "description": (
+                    "The forecast data, as a grib2 file. Subsets of the data can be loaded "
+                    "using information from the associated index file.",
+                ),
+            }
         ),
         "index": pystac.extensions.item_assets.AssetDefinition(
-            {"type": NDJSON_MEDIA_TYPE, "roles": ["index"]}
+            {
+                "type": NDJSON_MEDIA_TYPE,
+                "roles": ["index"],
+                "title": "Index file",
+                "description": (
+                    "The index file contains information on each message within "
+                    "the GRIB2 file.",
+                ),
+            }
         ),
     }
 
