@@ -32,6 +32,8 @@ xpr = re.compile(
     r"(?P<type>\w+)."
     r"(?P<format>\w+)"
 )
+NDJSON_MEDIA_TYPE = "application/x-ndjson"
+GRIB2_MEDIA_TYPE = "application/wmo-GRIB2"
 
 
 @dataclasses.dataclass
@@ -201,6 +203,20 @@ def create_collection(
     if extra_fields:
         collection.extra_fields.update(extra_fields)
 
+    item_assets = {
+        "data": pystac.extensions.item_assets.AssetDefinition(
+            {"type": GRIB2_MEDIA_TYPE, "roles": ["data"]}
+        ),
+        "index": pystac.extensions.item_assets.AssetDefinition(
+            {"type": NDJSON_MEDIA_TYPE, "roles": ["index"]}
+        ),
+    }
+
+    item_assets_ext = pystac.extensions.item_assets.ItemAssetsExtension.ext(
+        collection, add_if_missing=True
+    )
+    item_assets_ext.item_assets = item_assets
+
     return collection
 
 
@@ -342,10 +358,10 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
 
     for p in parts:
         if p.format == "grib2":
-            media_type = "application/wmo-GRIB2"
+            media_type = GRIB2_MEDIA_TYPE
             roles = ["data"]
         elif p.format == "index":
-            media_type = "application/x-ndjson"
+            media_type = NDJSON_MEDIA_TYPE
             roles = ["index"]
         elif p.format == "bufr":
             media_type = None
