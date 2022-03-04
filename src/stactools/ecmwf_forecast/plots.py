@@ -11,7 +11,7 @@ except ImportError as e:
 
 def plot_combinations(combinations):
     df = pd.DataFrame(combinations)
-    df["group"] = df["stream"] + "-" + df["reference_time"] + "-" + df["type"]
+    df["group"] = df["stream"] + "-" + df["type"] + "-" + df["reference_time"]
 
     series = []
 
