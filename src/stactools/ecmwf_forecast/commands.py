@@ -50,18 +50,17 @@ def create_ecmwfforecast_command(cli):
         return None
 
     @ecmwfforecast.command("create-item", short_help="Create a STAC item")
-    @click.argument("representative-href")
+    @click.argument("asset-href")
+    @click.argument("index-href")
     @click.argument("destination")
-    def create_item_command(representative_href: str, destination: str):
+    def create_item_command(asset_href, index_href: str, destination: str):
         """Creates a STAC Item
 
         Args:
             source (str): HREF of the Asset associated with the Item
             destination (str): An HREF for the STAC Collection
         """
-        item = stac.create_item_from_representative_asset(
-            representative_href,
-        )
+        item = stac.create_item([asset_href, index_href], split_by_step=True)
         item.save_object(dest_href=destination)
 
         return None

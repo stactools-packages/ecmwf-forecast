@@ -17,5 +17,8 @@ stac ecmwf-forecast create-collection template.json \
 ## Planetary Computer item
 
 ```console
-stac ecmwf-forecast create-item "/ecmwf/20220213/00z/0p4-beta/enfo/*enfo-ep*" item.json -p az --storage-options 'account_name=ai4edataeuwest'
+stac ecmwf-forecast create-item \
+    "ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-0h-enfo-ef.grib2" \
+    "/ecmwf/20220201/00z/0p4-beta/enfo/20220201000000-0h-enfo-ef.index" \
+    examples/item.json
 ```
