@@ -155,7 +155,7 @@ def create_collection(
     ]
 
     extent = Extent(
-        SpatialExtent([[-180.0, 90.0, 180.0, -90.0]]),
+        SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
         TemporalExtent([[None, None]]),  # type: ignore
     )
     keywords = [
