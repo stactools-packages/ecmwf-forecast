@@ -22,6 +22,9 @@ from pystac import (
 )
 from . import constants
 
+from kerchunk.combine import MultiZarrToZarr
+from kerchunk.grib2 import scan_grib
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,7 +37,6 @@ xpr = re.compile(
 )
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 GRIB2_MEDIA_TYPE = "application/wmo-GRIB2"
-
 
 @dataclasses.dataclass
 class Parts:
@@ -362,7 +364,13 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     item.properties["ecmwf:forecast_datetime"] = (
         part.forecast_datetime.isoformat() + "Z"
     )
-
+    
+    mzz = MultiZarrToZarr(scan_grib(part.filename),
+                          concat_dims=['valid_time'],
+                          identical_dims=['latitude', 'longitude', 'meanSea', 'step'],
+                          remote_protocol="file")
+    item.properties["kerchunk_indices"] = mzz.translate()
+    
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
     else:
