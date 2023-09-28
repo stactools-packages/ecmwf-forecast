@@ -365,11 +365,22 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         part.forecast_datetime.isoformat() + "Z"
     )
     
-    mzz = MultiZarrToZarr(scan_grib(part.filename),
+    
+    storage_account_name = part.filename.split('https://')[0].split('.blob')[0]
+    container = part.filename.split('.net/')[1].split('/')[0]
+    filename = part.filename.split(container+'/')[1]
+    url = 'abfs://{}@{}.dfs.core.windows.net/{}'.format(container, storage_account_name, filename)
+    
+    
+    #add connection string here
+    #connection_string = <insert connection string>
+    mzz = MultiZarrToZarr(scan_grib(url, storage_options={'connection_string':connection_string}),
                           concat_dims=['valid_time'],
                           identical_dims=['latitude', 'longitude', 'meanSea', 'step'],
-                          remote_protocol="file")
+                          remote_protocol="abfs",
+                          remote_options={"connection_string":connection_string})
     item.properties["kerchunk_indices"] = mzz.translate()
+    
     
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
