@@ -278,7 +278,7 @@ def group_assets(asset_hrefs: list[str], key=item_key):
     return grouped
 
 
-def create_item(asset_hrefs: list[str], split_by_step=False, connection_string=None) -> Item:
+def create_item(asset_hrefs: list[str], split_by_step=False) -> Item:
     """
     Create an item for the hrefs.
 
@@ -296,7 +296,7 @@ def create_item(asset_hrefs: list[str], split_by_step=False, connection_string=N
     parts = [
         Parts.from_filename(href, split_by_step=split_by_step) for href in asset_hrefs
     ]
-    return _create_item_from_parts(parts, split_by_step=split_by_step, connection_string=connection_string)
+    return _create_item_from_parts(parts, split_by_step=split_by_step)
 
 
 def create_item_from_representative_asset(asset_href: str) -> Item:
@@ -325,7 +325,7 @@ def create_item_from_representative_asset(asset_href: str) -> Item:
     return _create_item_from_parts(siblings)
 
 
-def _create_item_from_parts(parts: list[Parts], split_by_step=False, connection_string=None) -> Item:
+def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     part = parts[0]
     for i, other in enumerate(parts):
         if part.item_id != other.item_id:
@@ -365,19 +365,9 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False, connection_
         part.forecast_datetime.isoformat() + "Z"
     )
     
-    
-    storage_account_name = part.filename.split('https://')[0].split('.blob')[0]
-    container = part.filename.split('.net/')[1].split('/')[0]
-    filename = part.filename.split(container+'/')[1]
-    url = 'abfs://{}@{}.dfs.core.windows.net/{}'.format(container, storage_account_name, filename)
-    
-    
-    #add connection string here
-    mzz = MultiZarrToZarr(scan_grib(url, storage_options={'connection_string':connection_string}),
+    mzz = MultiZarrToZarr(scan_grib(part.filename),
                           concat_dims=['valid_time'],
-                          identical_dims=['latitude', 'longitude', 'meanSea', 'step'],
-                          remote_protocol="abfs",
-                          remote_options={"connection_string":connection_string})
+                          identical_dims=['latitude', 'longitude', 'meanSea', 'step'])
     item.properties["kerchunk_indices"] = mzz.translate()
     
     
