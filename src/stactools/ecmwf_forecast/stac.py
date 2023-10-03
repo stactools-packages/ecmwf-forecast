@@ -366,7 +366,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     )
     
     mzz = MultiZarrToZarr(scan_grib(part.filename),
-                          concat_dims=['valid_time'],
+                          concat_dims=['valid_time', 'time'],
                           identical_dims=['latitude', 'longitude', 'meanSea', 'step'])
     item.properties["kerchunk_indices"] = mzz.translate()
     
