@@ -365,11 +365,14 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         part.forecast_datetime.isoformat() + "Z"
     )
     
-    mzz = MultiZarrToZarr(scan_grib(part.filename),
+    try:
+        mzz = MultiZarrToZarr(scan_grib(part.filename),
                           concat_dims=['valid_time', 'time'],
                           identical_dims=['latitude', 'longitude', 'meanSea', 'step'])
-    item.properties["kerchunk_indices"] = mzz.translate()
-    
+        item.properties["kerchunk_indices"] = mzz.translate()
+    except:
+        print('corrupt file: ', part.filename)
+        item.properties["kerchunk_indices"] = {}
     
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
