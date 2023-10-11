@@ -22,8 +22,7 @@ from pystac import (
 )
 from . import constants
 
-from kerchunk.combine import MultiZarrToZarr
-from kerchunk.grib2 import scan_grib
+from . import kerchunk_helper_functions as khf
 
 logger = logging.getLogger(__name__)
 
@@ -366,10 +365,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     )
     
     try:
-        mzz = MultiZarrToZarr(scan_grib(part.filename),
-                          concat_dims=['time'],
-                          identical_dims=['latitude', 'longitude', 'meanSea', 'step','valid_time'])
-        item.properties["kerchunk_indices"] = mzz.translate()
+        item.properties["kerchunk_indices"] = khf.get_kerchunk_indices(part)
     except:
         print('corrupt file: ', part.filename)
         item.properties["kerchunk_indices"] = {}
