@@ -1,11 +1,16 @@
 from kerchunk.combine import MultiZarrToZarr
 from kerchunk.grib2 import scan_grib
-
+import fsspec
 
 def get_kerchunk_indices(part):
-    
+
+    #clear instance cache, prevents memory leak
+    fs = fsspec.filesystem('')
+    fs.clear_instance_cache()
+
+    out = scan_grib(part.filename)
+
     if (((part.stream=='scda')|(part.stream=='oper')) & (part.type=='fc')):
-        out = scan_grib(part.filename)
         messages_iso = [out[i] for i in range(len(out)) if 'isobaricInhPa/.zarray' in list(out[i]['refs'].keys())]
         mzz = MultiZarrToZarr(messages_iso,
                               concat_dims = ['time','isobaricInhPa'])
@@ -21,21 +26,21 @@ def get_kerchunk_indices(part):
                               concat_dims = ['time'])
         
     elif ((part.stream=='enfo') & (part.type=='ep')):
-        mzz = MultiZarrToZarr(scan_grib(part.filename),
+        mzz = MultiZarrToZarr(out,
                               identical_dims = ['heightAboveGround','isobaricInhPa','surface','meanSea'],
                               concat_dims = ['step','time'])
     
     elif ((part.stream=='waef') & (part.type=='ef')):
-        mzz = MultiZarrToZarr(scan_grib(part.filename),
+        mzz = MultiZarrToZarr(out,
                               concat_dims = ['number','time'])
         
     elif ((part.stream=='waef') & (part.type=='ep')):
-        mzz = MultiZarrToZarr(scan_grib(part.filename),
+        mzz = MultiZarrToZarr(out,
                               identical_dims = ['meanSea'],
                               concat_dims = ['step','time'])
     
     elif (((part.stream=='scwv')|(part.stream=='wave')) & (part.type=='fc')):
-        mzz = MultiZarrToZarr(scan_grib(part.filename),
+        mzz = MultiZarrToZarr(out,
                               concat_dims = ['time'])
         
     return mzz.translate()
