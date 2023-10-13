@@ -7,6 +7,7 @@ import itertools
 import logging
 import pathlib
 import re
+import ujson
 from typing import Any
 
 import pystac
@@ -24,6 +25,9 @@ from . import constants
 
 from kerchunk.combine import MultiZarrToZarr
 from kerchunk.grib2 import scan_grib
+import base64
+import fsspec
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -366,10 +370,14 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     )
     
     mzz = MultiZarrToZarr(scan_grib(part.filename),
-                          concat_dims=['valid_time'],
+                          concat_dims=['valid_time','time'],
                           identical_dims=['latitude', 'longitude', 'meanSea', 'step'])
-    item.properties["kerchunk_indices"] = mzz.translate()
-    
+    d = mzz.translate()
+    d['refs']['latitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['latitude/0'][7:]))))
+    d['refs']['longitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['longitude/0'][7:]))))
+    item.properties["kerchunk_indices"] = d#ujson.dumps(d).encode()
+    fs = fsspec.filesystem('')
+    fs.clear_instance_cache()    
     
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
