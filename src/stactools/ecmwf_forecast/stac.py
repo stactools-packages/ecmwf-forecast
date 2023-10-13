@@ -28,6 +28,7 @@ from kerchunk.grib2 import scan_grib
 import base64
 import fsspec
 import numpy as np
+from . import kerchunk_helper_functions as khf
 
 logger = logging.getLogger(__name__)
 
@@ -369,6 +370,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         part.forecast_datetime.isoformat() + "Z"
     )
     
+
     mzz = MultiZarrToZarr(scan_grib(part.filename),
                           concat_dims=['valid_time','time'],
                           identical_dims=['latitude', 'longitude', 'meanSea', 'step'])
@@ -378,6 +380,12 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     item.properties["kerchunk_indices"] = d#ujson.dumps(d).encode()
     fs = fsspec.filesystem('')
     fs.clear_instance_cache()    
+
+    try:
+        item.properties["kerchunk_indices"] = khf.get_kerchunk_indices(part)
+    except:
+        print('corrupt file: ', part.filename)
+        item.properties["kerchunk_indices"] = {}
     
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
