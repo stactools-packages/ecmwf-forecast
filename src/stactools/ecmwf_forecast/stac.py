@@ -381,11 +381,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     fs = fsspec.filesystem('')
     fs.clear_instance_cache()    
 
-    try:
-        item.properties["kerchunk_indices"] = khf.get_kerchunk_indices(part)
-    except:
-        print('corrupt file: ', part.filename)
-        item.properties["kerchunk_indices"] = {}
+    item.properties["kerchunk_indices"] = khf.get_kerchunk_indices(part)
     
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
