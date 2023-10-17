@@ -1,6 +1,8 @@
 from kerchunk.combine import MultiZarrToZarr
 from kerchunk.grib2 import scan_grib
 import fsspec
+import numpy as np
+import base64
 
 def get_kerchunk_indices(part):
 
@@ -43,4 +45,19 @@ def get_kerchunk_indices(part):
         mzz = MultiZarrToZarr(out,
                               concat_dims = ['time'])
         
-    return mzz.translate()
+    return compress_lat_lon(mzz.translate())
+
+def compress_lat_lon(d):
+    d['refs']['latitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['latitude/0'][7:]))))
+    d['refs']['longitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['longitude/0'][7:]))))
+    
+    return d
+
+def get_start_stop_inc(array):
+    start = array[0]
+    stop = array[-1]
+    delta = np.mean(array[1:] - array[0:-1])
+    deltap = np.round(delta,2)
+    if np.abs(delta-deltap) > 1e-10:
+        print("Delta may not be accurate:", delta, deltap)
+    return start, np.round(stop+deltap,2), deltap

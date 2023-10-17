@@ -378,14 +378,6 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         part.forecast_datetime.isoformat() + "Z"
     )
     
-
-    mzz = MultiZarrToZarr(scan_grib(part.filename),
-                          concat_dims=['valid_time','time'],
-                          identical_dims=['latitude', 'longitude', 'meanSea', 'step'])
-    d = mzz.translate()
-    d['refs']['latitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['latitude/0'][7:]))))
-    d['refs']['longitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['longitude/0'][7:]))))
-    item.properties["kerchunk_indices"] = d#ujson.dumps(d).encode()
     fs = fsspec.filesystem('')
     fs.clear_instance_cache()    
 
