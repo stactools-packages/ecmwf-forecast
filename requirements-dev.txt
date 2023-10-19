@@ -15,4 +15,3 @@ types-click
 types-pytz
 black
 pytest
-kerchunk
