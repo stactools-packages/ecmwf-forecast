@@ -11,6 +11,7 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
+
 [*.ipynb]
 # Content is json, but it seems to be minimally formatted
 indent_size = unset
