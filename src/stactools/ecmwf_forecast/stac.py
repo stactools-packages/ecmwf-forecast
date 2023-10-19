@@ -7,7 +7,6 @@ import itertools
 import logging
 import pathlib
 import re
-import ujson
 from typing import Any
 
 import pystac
