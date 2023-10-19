@@ -5,7 +5,6 @@ from stactools.ecmwf_forecast.range_codec import Range
 
 import base64
 import fsspec
-import numpy as np
 
 register_codec(Range)
 

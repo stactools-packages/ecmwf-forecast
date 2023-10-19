@@ -1,5 +1,4 @@
 from numcodecs.abc import Codec
-import base64
 import numpy as np
 
 class Range(Codec):

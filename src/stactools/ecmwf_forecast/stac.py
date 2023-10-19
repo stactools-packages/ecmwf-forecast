@@ -23,11 +23,7 @@ from pystac import (
 )
 from . import constants
 
-from kerchunk.combine import MultiZarrToZarr
-from kerchunk.grib2 import scan_grib
-import base64
 import fsspec
-import numpy as np
 from . import kerchunk_helper_functions as khf
 
 logger = logging.getLogger(__name__)
