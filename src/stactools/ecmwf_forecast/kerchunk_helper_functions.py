@@ -1,7 +1,7 @@
 from kerchunk.combine import MultiZarrToZarr
 from kerchunk.grib2 import scan_grib
 from numcodecs.registry import register_codec
-from range_codec import Range
+from stactools.ecmwf_forecast.range_codec import Range
 
 import base64
 import fsspec
