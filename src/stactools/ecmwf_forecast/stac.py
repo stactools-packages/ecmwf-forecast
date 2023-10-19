@@ -329,14 +329,6 @@ def create_item_from_representative_asset(asset_href: str) -> Item:
     siblings = list_sibling_assets(asset_href)
     return _create_item_from_parts(siblings)
 
-def get_start_stop_inc(array):
-    start = array[0]
-    stop = array[-1]
-    delta = np.mean(array[1:] - array[0:-1])
-    deltap = np.round(delta,2)
-    if np.abs(delta-deltap) > 1e-10:
-        print("Delta may not be accurate:", delta, deltap)
-    return start, np.round(stop+deltap,2), deltap
 
 def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     part = parts[0]

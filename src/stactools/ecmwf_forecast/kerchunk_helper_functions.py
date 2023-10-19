@@ -59,12 +59,3 @@ def compress_lat_lon(d):
     d['refs']['longitude/.zarray'] = ','.join([':'.join([i.split(':')[0], '[{"id": "range"}]']) if 'filter' in i else i for i in d['refs']['longitude/.zarray'].split(',')])
     
     return d
-
-def get_start_stop_inc(array):
-    start = array[0]
-    stop = array[-1]
-    delta = np.mean(array[1:] - array[0:-1])
-    deltap = np.round(delta,2)
-    if np.abs(delta-deltap) > 1e-10:
-        print("Delta may not be accurate:", delta, deltap)
-    return start, np.round(stop+deltap,2), deltap
