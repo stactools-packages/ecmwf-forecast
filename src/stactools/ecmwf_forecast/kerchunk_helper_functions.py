@@ -1,8 +1,13 @@
 from kerchunk.combine import MultiZarrToZarr
 from kerchunk.grib2 import scan_grib
+from numcodecs.registry import register_codec
+from range_codec import Range
+
+import base64
 import fsspec
 import numpy as np
-import base64
+
+register_codec(Range)
 
 def get_kerchunk_indices(part):
 
@@ -48,8 +53,10 @@ def get_kerchunk_indices(part):
     return compress_lat_lon(mzz.translate())
 
 def compress_lat_lon(d):
-    d['refs']['latitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['latitude/0'][7:]))))
-    d['refs']['longitude/0'] = 'RANGE({},{},{})'.format(*get_start_stop_inc(np.frombuffer(base64.b64decode(d['refs']['longitude/0'][7:]))))
+    d['refs']['latitude/0'] = 'base64:' + base64.b64encode(Range().encode(base64.b64decode(d['refs']['latitude/0'][7:]))).decode()
+    d['refs']['longitude/0'] = 'base64:' + base64.b64encode(Range().encode(base64.b64decode(d['refs']['longitude/0'][7:]))).decode()
+    d['refs']['latitude/.zarray'] = ','.join([':'.join([i.split(':')[0],'[{"id": "range"}]']) if 'filter' in i else i for i in d['refs']['latitude/.zarray'].split(',')])
+    d['refs']['longitude/.zarray'] = ','.join([':'.join([i.split(':')[0], '[{"id": "range"}]']) if 'filter' in i else i for i in d['refs']['longitude/.zarray'].split(',')])
     
     return d
 
