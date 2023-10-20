@@ -17,8 +17,12 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
+        # Check code formatting, lint, and type checking
+	echo ["running scripts/lint"]
         ./scripts/lint
-
+	
+	# Codespell
+	echo ["run codespell"]
         codespell -I .codespellignore -f \
             scripts/* \
             *.py ./**/*.py \
@@ -26,7 +30,9 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             docs/*.rst docs/**/*.rst \
             docs/*.ipynb docs/**/*.ipynb
 
-        coverage run --source=${COVERAGE_DIRS} -m unittest discover tests/
+	# Coverage
+	echo ["run coverage over tests"]
+	coverage run --source=${COVERAGE_DIRS} -m unittest discover tests/
         coverage xml
     fi
 fi
