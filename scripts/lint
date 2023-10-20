@@ -31,7 +31,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         # echo ["running ec"]
         # ec --exclude "$EC_EXCLUDE"
         # Code formatting
-        echo ["running blck"]
+        echo ["running black"]
         black --check .
         # Lint
         echo ["running flake8"]
