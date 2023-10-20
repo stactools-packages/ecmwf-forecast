@@ -17,20 +17,13 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Run format
-	echo ["running format"]
-	./scripts/format
-	
-	# Check code formatting, lint, and type checking
-	echo ["running scripts/lint"]
-        ./scripts/lint
-	
 	# Codespell
 	echo ["run codespell"]
-        ./scripts/codespell
-
-	# Coverage
-	echo ["run coverage over tests"]
-	./scripts/coverage
+        codespell -I .codespellignore -f \
+            scripts/* \
+            *.py ./**/*.py \
+            *.md \
+            docs/*.rst docs/**/*.rst \
+            docs/*.ipynb docs/**/*.ipynb
     fi
 fi
