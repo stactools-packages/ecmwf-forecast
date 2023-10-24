@@ -355,7 +355,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
 
     #remove this once this has been tested for all 7 collections
     if ((part.stream=='wave') & (part.type=='fc')):
-        item.properties["kerchunk_indices"] = khf.get_kerchunk_indices(part)
+        item.properties["kerchunk:indices"] = khf.get_kerchunk_indices(part)
 
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
