@@ -28,5 +28,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
 
         coverage run --source=${COVERAGE_DIRS} -m unittest discover tests/
         coverage xml
+        pytest tests
     fi
 fi
