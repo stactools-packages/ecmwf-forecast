@@ -16,7 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        env: ci/envs/py310.yaml
+        env:
+          - ci/envs/py310.yaml
     defaults:
       run:
         shell: bash -l {0}
