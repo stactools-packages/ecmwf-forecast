@@ -1,8 +1,8 @@
 try:
     import matplotlib.font_manager
+    import matplotlib.pyplot as plt
     import pandas as pd
     import seaborn as sns
-    import matplotlib.pyplot as plt
 except ImportError as e:
     raise ImportError(
         "stactools.ecmwf_forecast.plots requires matplotlib, pandas, and seaborn."
@@ -18,13 +18,10 @@ def plot_combinations(combinations):
     for _, (k, v) in enumerate(df.groupby("group")):
         series.append(pd.Series(1, index=v.step, name=k))
 
-    m = (
-        pd.concat(series, axis=1)
-        .fillna(0)
-        .astype(int)
-        .rename(lambda x: x.rstrip("h"))
-        .T.reindex(columns=list(map(str, range(0, 361, 3))), fill_value=0)
-    )
+    m = (pd.concat(series, axis=1).fillna(0).astype(int).rename(
+        lambda x: x.rstrip("h")).T.reindex(columns=list(
+            map(str, range(0, 361, 3))),
+                                           fill_value=0))
     _, ax = plt.subplots(figsize=(24, 24))
     ax.set_facecolor("white")
     sns.heatmap(

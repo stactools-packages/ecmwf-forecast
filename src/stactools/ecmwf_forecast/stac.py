@@ -1,37 +1,27 @@
 from __future__ import annotations
 
 import dataclasses
-import operator
 import datetime
 import itertools
 import logging
+import operator
 import pathlib
 import re
 from typing import Any
 
 import pystac
-from pystac import (
-    CatalogType,
-    Collection,
-    Extent,
-    Item,
-    Provider,
-    ProviderRole,
-    SpatialExtent,
-    TemporalExtent,
-)
+from pystac import (CatalogType, Collection, Extent, Item, Provider,
+                    ProviderRole, SpatialExtent, TemporalExtent)
+
 from . import constants
 
 logger = logging.getLogger(__name__)
 
-
-xpr = re.compile(
-    r"(?P<reference_datetime>\d{10})0000-"
-    r"(?P<step>\d+[h|m])-"
-    r"(?P<stream>\w+)-"
-    r"(?P<type>\w+)."
-    r"(?P<format>\w+)"
-)
+xpr = re.compile(r"(?P<reference_datetime>\d{10})0000-"
+                 r"(?P<step>\d+[h|m])-"
+                 r"(?P<stream>\w+)-"
+                 r"(?P<type>\w+)."
+                 r"(?P<format>\w+)")
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 GRIB2_MEDIA_TYPE = "application/wmo-GRIB2"
 
@@ -62,8 +52,7 @@ class Parts:
         d = m.groupdict()
         d["filename"] = filename
         d["reference_datetime"] = datetime.datetime.strptime(
-            d["reference_datetime"], "%Y%m%d%H"
-        )  # type: ignore
+            d["reference_datetime"], "%Y%m%d%H")  # type: ignore
         #  error: Argument 1 to "Parts" has incompatible type
         # "**Dict[str, Union[str, Any]]"; expected "datetime"
         return cls(**d, split_by_step=split_by_step)  # type: ignore
@@ -119,8 +108,8 @@ class Parts:
 
 
 def create_collection(
-    thumbnail=None, extra_fields: dict[str, Any] | None = None
-) -> Collection:
+        thumbnail=None,
+        extra_fields: dict[str, Any] | None = None) -> Collection:
     """Create a STAC Collection
 
     This function includes logic to extract all relevant metadata from
@@ -148,7 +137,8 @@ def create_collection(
         ),
         pystac.Link(
             rel="documentation",
-            target="https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time",
+            target=
+            "https://confluence.ecmwf.int/display/UDOC/ECMWF+Open+Data+-+Real+Time",
             media_type="text/html",
             title="ECMWF Open Data (Real Time) documentation",
         ),
@@ -204,33 +194,32 @@ def create_collection(
         collection.extra_fields.update(extra_fields)
 
     item_assets = {
-        "data": pystac.extensions.item_assets.AssetDefinition(
-            {
-                "type": GRIB2_MEDIA_TYPE,
-                "roles": ["data"],
-                "title": "GRIB2 data file",
-                "description": (
-                    "The forecast data, as a grib2 file. Subsets of the data can be loaded "
-                    "using information from the associated index file."
-                ),
-            }
-        ),
-        "index": pystac.extensions.item_assets.AssetDefinition(
-            {
-                "type": NDJSON_MEDIA_TYPE,
-                "roles": ["index"],
-                "title": "Index file",
-                "description": (
-                    "The index file contains information on each message within "
-                    "the GRIB2 file."
-                ),
-            }
-        ),
+        "data":
+        pystac.extensions.item_assets.AssetDefinition({
+            "type":
+            GRIB2_MEDIA_TYPE,
+            "roles": ["data"],
+            "title":
+            "GRIB2 data file",
+            "description":
+            ("The forecast data, as a grib2 file. Subsets of the data can be loaded "
+             "using information from the associated index file."),
+        }),
+        "index":
+        pystac.extensions.item_assets.AssetDefinition({
+            "type":
+            NDJSON_MEDIA_TYPE,
+            "roles": ["index"],
+            "title":
+            "Index file",
+            "description":
+            ("The index file contains information on each message within "
+             "the GRIB2 file."),
+        }),
     }
 
     item_assets_ext = pystac.extensions.item_assets.ItemAssetsExtension.ext(
-        collection, add_if_missing=True
-    )
+        collection, add_if_missing=True)
     item_assets_ext.item_assets = item_assets
 
     return collection
@@ -251,8 +240,7 @@ def item_key(filename) -> tuple[datetime.datetime, str, str]:
 
 
 def item_key_split_by_parts(
-    filename,
-) -> tuple[datetime.datetime, str, str, datetime.timedelta]:
+    filename, ) -> tuple[datetime.datetime, str, str, datetime.timedelta]:
     """
     Gives tuple of attributes in a filename used to determine its item.
 
@@ -292,7 +280,8 @@ def create_item(asset_hrefs: list[str], split_by_step=False) -> Item:
     pystac.Item
     """
     parts = [
-        Parts.from_filename(href, split_by_step=split_by_step) for href in asset_hrefs
+        Parts.from_filename(href, split_by_step=split_by_step)
+        for href in asset_hrefs
     ]
     return _create_item_from_parts(parts, split_by_step=split_by_step)
 
@@ -329,20 +318,18 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         if part.item_id != other.item_id:
             raise ValueError(
                 f"Asset {i} has different Item ID ({part.item_id} != {other.item_id}). "
-                f"URL = {part.filename}"
-            )
+                f"URL = {part.filename}")
 
     geometry = {
-        "type": "Polygon",
-        "coordinates": (
-            (
-                (180.0, -90.0),
-                (180.0, 90.0),
-                (-180.0, 90.0),
-                (-180.0, -90.0),
-                (180.0, -90.0),
-            ),
-        ),
+        "type":
+        "Polygon",
+        "coordinates": ((
+            (180.0, -90.0),
+            (180.0, 90.0),
+            (-180.0, 90.0),
+            (-180.0, -90.0),
+            (180.0, -90.0),
+        ), ),
     }
     bbox = [-180.0, -90.0, 180.0, 90.0]
 
@@ -357,20 +344,18 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     item.properties["ecmwf:stream"] = part.stream
     item.properties["ecmwf:type"] = part.type
     item.properties["ecmwf:reference_datetime"] = (
-        part.reference_datetime.isoformat() + "Z"
-    )
+        part.reference_datetime.isoformat() + "Z")
     item.properties["ecmwf:forecast_datetime"] = (
-        part.forecast_datetime.isoformat() + "Z"
-    )
+        part.forecast_datetime.isoformat() + "Z")
 
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
     else:
         offset = max(p.offset for p in parts)
-        item.properties["start_datetime"] = part.reference_datetime.isoformat() + "Z"
-        item.properties["end_datetime"] = (
-            part.reference_datetime + offset
-        ).isoformat() + "Z"
+        item.properties["start_datetime"] = part.reference_datetime.isoformat(
+        ) + "Z"
+        item.properties["end_datetime"] = (part.reference_datetime +
+                                           offset).isoformat() + "Z"
 
     for p in parts:
         if p.format == "grib2":
@@ -391,7 +376,8 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
-                extra_fields={"ecmwf:step": p.step} if not split_by_step else {},
+                extra_fields={"ecmwf:step": p.step}
+                if not split_by_step else {},
             ),
         )
 
@@ -417,18 +403,22 @@ def list_sibling_assets(filename) -> list[Parts]:
 
     # mypy failing on python 3.7
     combinations = constants.get_combinations()  # type: ignore
-    d = {k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)}  # type: ignore
-    combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
+    d = {
+        k: list(v)
+        for k, v in itertools.groupby(combinations, key=_assets_key)
+    }  # type: ignore
+    combos = list(d[p.format, p.type,
+                    p.reference_datetime.strftime("%H"), p.stream])
     prefix = p.prefix or ""
 
     other_files = [
         f"{prefix}{p.reference_datetime:%Y%m%d%H}0000-{combo.step}-{combo.stream}"
-        f"-{combo.type}.{combo.format}"
-        for combo in combos
+        f"-{combo.type}.{combo.format}" for combo in combos
     ]
 
     if p.format == "grib2":
-        other_files.extend([file.rsplit(".", 1)[0] + ".index" for file in other_files])
+        other_files.extend(
+            [file.rsplit(".", 1)[0] + ".index" for file in other_files])
     parts = [Parts.from_filename(other_file) for other_file in other_files]
     parts = sorted(parts, key=operator.attrgetter("step"))
 

@@ -23,10 +23,8 @@ def test_create_collection():
     [
         "20220202000000-0h-enfo-ef.grib2",
         "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-        (
-            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
-            "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"
-        ),
+        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
+         "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"),
     ],
 )
 def test_create_items(filename):
@@ -45,10 +43,8 @@ def test_create_items(filename):
     [
         "20220202000000-0h-enfo-ef.grib2",
         "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-        (
-            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
-            "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"
-        ),
+        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
+         "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"),
     ],
 )
 def test_parts(filename):
@@ -72,10 +68,8 @@ def test_parts(filename):
     [
         "20220202000000-0h-enfo-ef.grib2",
         "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-        (
-            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
-            "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"
-        ),
+        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
+         "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"),
     ],
 )
 def test_list_sibling_assets(filename):
@@ -106,8 +100,7 @@ def test_split_by_parts():
         stac.create_item(files, split_by_step=True)
 
     i0, i1 = stac.create_item(files[:2], split_by_step=True), stac.create_item(
-        files[2:], split_by_step=True
-    )
+        files[2:], split_by_step=True)
     assert i0.properties["ecmwf:step"] == "0h"
     assert i1.properties["ecmwf:step"] == "3h"
     assert i0.assets["data"].extra_fields == {}
@@ -118,15 +111,13 @@ def test_split_by_parts():
 def test_item_assets():
     collection = stac.create_collection()
     assert collection.extra_fields["item_assets"]["data"]["roles"] == ["data"]
-    assert (
-        collection.extra_fields["item_assets"]["data"]["type"]
-        == "application/wmo-GRIB2"
-    )
-    assert collection.extra_fields["item_assets"]["index"]["roles"] == ["index"]
-    assert (
-        collection.extra_fields["item_assets"]["index"]["type"]
-        == "application/x-ndjson"
-    )
+    assert (collection.extra_fields["item_assets"]["data"]["type"] ==
+            "application/wmo-GRIB2")
+    assert collection.extra_fields["item_assets"]["index"]["roles"] == [
+        "index"
+    ]
+    assert (collection.extra_fields["item_assets"]["index"]["type"] ==
+            "application/x-ndjson")
 
     # assert collection.extra_fields["item_assets"]["index"] == {
     #     "roles": ["index"],
