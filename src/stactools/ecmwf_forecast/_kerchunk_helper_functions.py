@@ -6,8 +6,6 @@ from stactools.ecmwf_forecast.range_codec import Range
 import base64
 import fsspec
 
-register_codec(Range)
-
 def get_kerchunk_indices(part):
 
     #clear instance cache, prevents memory leak
