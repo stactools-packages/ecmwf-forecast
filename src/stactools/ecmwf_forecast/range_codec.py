@@ -11,7 +11,7 @@ class Range(Codec):
     
     def __init__(self, dtype=float):
         self.dtype = np.dtype(dtype)
-        if self.dtype == object or self.astype == object:
+        if self.dtype == object:
             raise ValueError('object arrays are not supported')
     
     def _get_start_stop_inc(self, array):
@@ -25,9 +25,9 @@ class Range(Codec):
     
     def encode(self,buf):
         info = self._get_start_stop_inc(np.frombuffer(buf,dtype=self.dtype))
-        info = np.array([*info])
+        info = np.array([*info], dtype=self.dtype)
         return info.tobytes()
     
     def decode(self,buf):
-        new_arr = np.arange(*[float(i) for i in np.frombuffer(buf)], dtype=self.dtype)
-        return new_arr 
+        new_arr = np.arange(*[i for i in np.frombuffer(buf, dtype=self.dtype)], dtype=self.dtype)
+        return new_arr    
