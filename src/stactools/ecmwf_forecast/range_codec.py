@@ -9,6 +9,11 @@ class Range(Codec):
     """
     codec_id='range'
     
+    def __init__(self, dtype=float):
+        self.dtype = np.dtype(dtype)
+        if self.dtype == object or self.astype == object:
+            raise ValueError('object arrays are not supported')
+    
     def _get_start_stop_inc(self, array):
         start = array[0]
         stop = array[-1]
@@ -19,10 +24,10 @@ class Range(Codec):
         return start, np.round(stop+deltap,2), deltap
     
     def encode(self,buf):
-        info = self._get_start_stop_inc(np.frombuffer(buf))
+        info = self._get_start_stop_inc(np.frombuffer(buf,dtype=self.dtype))
         info = np.array([*info])
         return info.tobytes()
     
     def decode(self,buf):
-        new_arr = np.arange(*[float(i) for i in np.frombuffer(buf)])
-        return new_arr
+        new_arr = np.arange(*[float(i) for i in np.frombuffer(buf)], dtype=self.dtype)
+        return new_arr 
