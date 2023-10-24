@@ -28,7 +28,8 @@ jobs:
         with:
           environment-file: ${{ matrix.env }}
       - name: Install
-        python3 -m pip install -e .
+        run: |
+            python3 -m pip install -e .
 
       - name: Check and Log Environment
         run: |
