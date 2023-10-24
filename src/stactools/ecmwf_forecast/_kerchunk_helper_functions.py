@@ -16,7 +16,7 @@ def get_kerchunk_indices(part):
 
     out = scan_grib(part.filename)
 
-    if (((part.stream=='scda')|(part.stream=='oper')) & (part.type=='fc')):
+    if (((part.stream=='scda') or (part.stream=='oper')) and (part.type=='fc')):
         messages_iso = [out[i] for i in range(len(out)) if 'isobaricInhPa/.zarray' in list(out[i]['refs'].keys())]
         mzz = MultiZarrToZarr(messages_iso,
                               concat_dims = ['time','isobaricInhPa'])
@@ -31,21 +31,21 @@ def get_kerchunk_indices(part):
                               identical_dims = ['depthBelowLandLayer','entireAtmosphere','heightAboveGround','meanSea','surface'],
                               concat_dims = ['time'])
         
-    elif ((part.stream=='enfo') & (part.type=='ep')):
+    elif ((part.stream=='enfo') and (part.type=='ep')):
         mzz = MultiZarrToZarr(out,
                               identical_dims = ['heightAboveGround','isobaricInhPa','surface','meanSea'],
                               concat_dims = ['step','time'])
     
-    elif ((part.stream=='waef') & (part.type=='ef')):
+    elif ((part.stream=='waef') and (part.type=='ef')):
         mzz = MultiZarrToZarr(out,
                               concat_dims = ['number','time'])
         
-    elif ((part.stream=='waef') & (part.type=='ep')):
+    elif ((part.stream=='waef') and (part.type=='ep')):
         mzz = MultiZarrToZarr(out,
                               identical_dims = ['meanSea'],
                               concat_dims = ['step','time'])
     
-    elif (((part.stream=='scwv')|(part.stream=='wave')) & (part.type=='fc')):
+    elif (((part.stream=='scwv') or (part.stream=='wave')) and (part.type=='fc')):
         mzz = MultiZarrToZarr(out,
                               concat_dims = ['time'])
         
