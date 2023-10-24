@@ -15,7 +15,7 @@ from pystac import (CatalogType, Collection, Extent, Item, Provider,
                     ProviderRole, SpatialExtent, TemporalExtent)
 
 from . import constants
-from . import kerchunk_helper_functions as khf
+from . import _kerchunk_helper_functions as khf
 
 logger = logging.getLogger(__name__)
 
