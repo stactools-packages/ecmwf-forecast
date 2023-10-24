@@ -1,7 +1,8 @@
-name: stactools-ecmwf-forecast
+name: test
 channels:
   - conda-forge
   - defaults
 dependencies:
+  - python=3.10
   - gdal
   - cfgrib

@@ -1,8 +1,8 @@
 try:
     import matplotlib.font_manager
+    import matplotlib.pyplot as plt
     import pandas as pd
     import seaborn as sns
-    import matplotlib.pyplot as plt
 except ImportError as e:
     raise ImportError(
         "stactools.ecmwf_forecast.plots requires matplotlib, pandas, and seaborn."

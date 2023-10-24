@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import dataclasses
-import operator
 import datetime
 import itertools
 import logging
+import operator
 import pathlib
 import re
 from typing import Any
@@ -20,10 +20,10 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
+
 from . import constants
 
 logger = logging.getLogger(__name__)
-
 
 xpr = re.compile(
     r"(?P<reference_datetime>\d{10})0000-"
@@ -417,7 +417,9 @@ def list_sibling_assets(filename) -> list[Parts]:
 
     # mypy failing on python 3.7
     combinations = constants.get_combinations()  # type: ignore
-    d = {k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)}  # type: ignore
+    d = {
+        k: list(v) for k, v in itertools.groupby(combinations, key=_assets_key)
+    }  # type: ignore
     combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
     prefix = p.prefix or ""
 
