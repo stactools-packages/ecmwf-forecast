@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Functionality to support the split of the ecmwf-forecast collection into 7 separate collections (ecmwf-forecast-wave-fc, ecmwf-forecast-cda-fc, ecmwf-forecast-oper-fc, ecmwf-forecast-enfo-ep, ecmwf-forecast-waef-ef, ecmwf-forecast-waef-ep, ecmwf-forecast-scwv-fc)
-- Functionality to add kerchunk indices into the STAC item under item.properties['kerchunk_indices']
+- Functionality to add kerchunk indices to the STAC item
 
 ### Deprecated
 
