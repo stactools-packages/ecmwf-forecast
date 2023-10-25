@@ -70,8 +70,9 @@ def create_ecmwfforecast_command(cli):
     )
     @click.option("-d", "--destination", default="ecmwf-forecast-coverage.png")
     def _(destination):
-        from stactools.ecmwf_forecast import constants, plots
         import matplotlib.pyplot as plt
+
+        from stactools.ecmwf_forecast import constants, plots
 
         plots.plot_combinations(constants.get_combinations())
         plt.savefig(

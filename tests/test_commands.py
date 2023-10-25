@@ -6,7 +6,6 @@
 
 # from stactools.ecmwf_forecast.commands import create_ecmwfforecast_command
 
-
 # class CommandsTest(CliTestCase):
 
 #     def create_subcommand_functions(self):

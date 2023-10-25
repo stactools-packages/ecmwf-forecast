@@ -23,7 +23,6 @@ TYPES = ["fc", "ef", "ep", "tf"]
 FORMATS = ["grib2", "bufr"]
 PRESSURE_LEVELS = [1000, 925, 850, 700, 500, 300, 250, 200, 50]
 
-
 # mypy failing on python 3.7
 
 

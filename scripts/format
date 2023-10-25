@@ -9,7 +9,7 @@ fi
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Format code with yapf
+Format code with black
 "
 }
 
@@ -22,6 +22,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         # Sort imports
         isort -v --overwrite-in-place .
         # Code formatting
-        yapf -ipr ${DIRS_TO_CHECK[@]}
+        black .
     fi
 fi
