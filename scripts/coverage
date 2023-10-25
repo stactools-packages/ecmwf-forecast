@@ -9,19 +9,15 @@ fi
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Format code with black
+Execute test suites.
 "
 }
-
-DIRS_TO_CHECK=("src" "tests" "scripts")
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Sort imports
-        isort -v --overwrite-in-place .
-        # Code formatting
-        black .
+	coverage run --source=${COVERAGE_DIRS} -m unittest discover tests/
+        coverage xml
     fi
 fi

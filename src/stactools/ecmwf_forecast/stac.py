@@ -9,6 +9,7 @@ import pathlib
 import re
 from typing import Any
 
+import fsspec
 import pystac
 from pystac import (
     CatalogType,
@@ -21,6 +22,7 @@ from pystac import (
     TemporalExtent,
 )
 
+from . import _kerchunk_helper_functions as khf
 from . import constants
 
 logger = logging.getLogger(__name__)
@@ -32,6 +34,7 @@ xpr = re.compile(
     r"(?P<type>\w+)."
     r"(?P<format>\w+)"
 )
+
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 GRIB2_MEDIA_TYPE = "application/wmo-GRIB2"
 
@@ -362,6 +365,13 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     item.properties["ecmwf:forecast_datetime"] = (
         part.forecast_datetime.isoformat() + "Z"
     )
+
+    fs = fsspec.filesystem("")
+    fs.clear_instance_cache()
+
+    # remove this once this has been tested for all 7 collections
+    if (part.stream == "wave") & (part.type == "fc"):
+        item.properties["kerchunk:indices"] = khf.get_kerchunk_indices(part)
 
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
