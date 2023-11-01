@@ -382,7 +382,10 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         if p.format == "grib2":
             media_type = GRIB2_MEDIA_TYPE
             roles = ["data"]
-            kerchunk_indices = khf.get_kerchunk_indices(p)
+            if ((p.stream == "wave") & (p.type == "fc")):
+                kerchunk_indices = khf.get_kerchunk_indices(p)
+            else:
+                kerchunk_indices = {}
         elif p.format == "index":
             media_type = NDJSON_MEDIA_TYPE
             roles = ["index"]
