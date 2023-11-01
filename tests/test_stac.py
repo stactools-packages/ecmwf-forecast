@@ -44,10 +44,10 @@ def test_create_collection():
     ],
 )
 def test_create_items(filename):
-    item = stac.create_item_from_representative_asset(filename)
+    item = stac.create_item([filename])
         
     assert item.id == "ecmwf-2023-10-19T00-wave-fc"
-    assert len(item.assets) == 130
+    assert len(item.assets) == 1
     assert item.bbox == [-180.0, -90.0, 180.0, 90.0]
     assert item.properties["ecmwf:stream"] == "wave"
     assert item.properties["ecmwf:type"] == "fc"
