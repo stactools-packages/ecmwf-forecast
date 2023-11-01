@@ -71,7 +71,16 @@ def get_kerchunk_indices(part):
     elif ((part.stream == "scwv") or (part.stream == "wave")) and (part.type == "fc"):
         mzz = MultiZarrToZarr(out, concat_dims=["time"])
 
-    return compress_lat_lon(mzz.translate())
+    return convert_base64(compress_lat_lon(mzz.translate()))
+
+
+def convert_base64(d):
+    for key in d['refs']:
+        if (('/0' in key) & ('.' not in key) & ('latitude' not in key) & ('longitude' not in key)):
+            if d['refs'][key][0:6]!='base64':
+                d['refs'][key] = (b"base64:" + base64.b64encode(d['refs'][key].encode())).decode()
+
+    return d
 
 
 def compress_lat_lon(d):
