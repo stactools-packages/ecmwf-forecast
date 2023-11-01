@@ -369,10 +369,6 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     fs = fsspec.filesystem("")
     fs.clear_instance_cache()
 
-    # remove this once this has been tested for all 7 collections
-    if (part.stream == "wave") & (part.type == "fc"):
-        item.properties["kerchunk:indices"] = khf.get_kerchunk_indices(part)
-
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
     else:
@@ -386,12 +382,15 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         if p.format == "grib2":
             media_type = GRIB2_MEDIA_TYPE
             roles = ["data"]
+            kerchunk_indices = khf.get_kerchunk_indices(p)
         elif p.format == "index":
             media_type = NDJSON_MEDIA_TYPE
             roles = ["index"]
+            kerchunk_indices = None
         elif p.format == "bufr":
             media_type = None
             roles = ["data"]
+            kerchunk_indices = None
         else:
             raise ValueError(f"Bad extension: {p.format}")
 
@@ -401,6 +400,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
+                extra_fields=kerchunk_indices,
                 extra_fields={"ecmwf:step": p.step} if not split_by_step else {},
             ),
         )
