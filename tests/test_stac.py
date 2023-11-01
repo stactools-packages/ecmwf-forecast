@@ -9,14 +9,13 @@ import urllib.request
 
 blob_file = ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
          "0p4-beta/wave/20231019000000-0h-wave-fc.grib2")
-
 local_files = ["20231019000000-0h-wave-fc.grib2",
                "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2"]
-for i in range(len(local_files)):
-    if not os.path.exists(local_files[i]):
+for i, local_file in enumerate(local_files):
+    if not os.path.exists(local_file):
         if i==1:
-            os.makedirs(local_files[i].split('.')[0], exist_ok=True)
-        urllib.request.urlretrieve(blob_file, local_files[i])
+            os.makedirs(local_file.split('.')[0], exist_ok=True)
+        urllib.request.urlretrieve(blob_file, local_file)
 
 
 def test_create_collection():

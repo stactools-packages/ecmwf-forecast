@@ -403,8 +403,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
-                extra_fields=kerchunk_indices,
-                extra_fields={"ecmwf:step": p.step} if not split_by_step else {},
+                extra_fields={"ecmwf:step": p.step, "kerchunk:indices": kerchunk_indices} if not split_by_step else {"kerchunk:indices": kerchunk_indices},
             ),
         )
 
