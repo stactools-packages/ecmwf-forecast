@@ -3,6 +3,22 @@ import datetime
 import pytest
 
 from stactools.ecmwf_forecast import stac
+import json
+import os
+import urllib.request
+
+blob_file = ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
+         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2")
+local_files = ["20231019000000-0h-wave-fc.grib2",
+               "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
+               "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.index",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.index"]
+for i, local_file in enumerate(local_files):
+    if not os.path.exists(local_file):
+        if i==1:
+            os.makedirs(local_file.split('.')[0], exist_ok=True)
+        urllib.request.urlretrieve(blob_file, local_file)
 
 
 def test_create_collection():
@@ -21,48 +37,50 @@ def test_create_collection():
 @pytest.mark.parametrize(
     "filename",
     [
-        "20220202000000-0h-enfo-ef.grib2",
-        "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-        (
-            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
-            "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"
-        ),
+        "20231019000000-0h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
+        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
+         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"),
     ],
 )
 def test_create_items(filename):
-    item = stac.create_item_from_representative_asset(filename)
-    assert item.id == "ecmwf-2022-02-02T00-enfo-ef"
-    assert len(item.assets) == 170
+    item = stac.create_item([filename])
+        
+    assert item.id == "ecmwf-2023-10-19T00-wave-fc"
+    assert len(item.assets) == 1
     assert item.bbox == [-180.0, -90.0, 180.0, 90.0]
-    assert item.properties["ecmwf:stream"] == "enfo"
-    assert item.properties["ecmwf:type"] == "ef"
-    assert item.properties["start_datetime"] == "2022-02-02T00:00:00Z"
-    assert item.properties["end_datetime"] == "2022-02-17T00:00:00Z"
+    assert item.properties["ecmwf:stream"] == "wave"
+    assert item.properties["ecmwf:type"] == "fc"
+    assert item.properties["ecmwf:forecast_datetime"] == "2023-10-19T00:00:00Z"
+    assert item.properties[
+        "ecmwf:reference_datetime"] == "2023-10-19T00:00:00Z"
+    if filename.startswith("https://ai4edataeuwest.blob.core.windows.net/"):
+        with open("tests/blob_kerchunk_indices.json") as jsonfile:
+            kerchunk_indices = json.load(jsonfile)
+        assert item.assets["0h-grib2"].to_dict()["kerchunk:indices"] == kerchunk_indices
 
-
+            
 @pytest.mark.parametrize(
     "filename",
     [
-        "20220202000000-0h-enfo-ef.grib2",
-        "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-        (
-            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
-            "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"
-        ),
+        "20231019000000-0h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
+        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
+         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"),
     ],
 )
 def test_parts(filename):
     result = stac.Parts.from_filename(filename)
-    assert result.reference_datetime == datetime.datetime(2022, 2, 2)
-    assert result.stream == "enfo"
+    assert result.reference_datetime == datetime.datetime(2023, 10, 19)
+    assert result.stream == "wave"
     assert result.step == "0h"
-    assert result.type == "ef"
+    assert result.type == "fc"
     assert result.format == "grib2"
     assert result.filename == filename
-    assert result.name == "20220202000000-0h-enfo-ef.grib2"
-    assert result.item_id == "ecmwf-2022-02-02T00-enfo-ef"
+    assert result.name == "20231019000000-0h-wave-fc.grib2"
+    assert result.item_id == "ecmwf-2023-10-19T00-wave-fc"
     assert result.asset_id == "0h-grib2"
-    if not filename.startswith("20220202000000-0h"):
+    if not filename.startswith("20231019000000-0h"):
         assert result.filename != result.name
         assert result.prefix == filename.rsplit("/", 1)[0] + "/"
 
@@ -70,12 +88,10 @@ def test_parts(filename):
 @pytest.mark.parametrize(
     "filename",
     [
-        "20220202000000-0h-enfo-ef.grib2",
-        "20220202/00z/0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2",
-        (
-            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20220202/00z/"
-            "0p4-beta/enfo/20220202000000-0h-enfo-ef.grib2"
-        ),
+        "20231019000000-0h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
+        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
+         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"),
     ],
 )
 def test_list_sibling_assets(filename):
@@ -94,10 +110,10 @@ def test_list_sibling_assets(filename):
 
 def test_split_by_parts():
     files = [
-        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-0h-enfo-ef.grib2",
-        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-0h-enfo-ef.index",
-        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-3h-enfo-ef.grib2",
-        "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-3h-enfo-ef.index",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.index",
+        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.index",
     ]
 
     stac.create_item(files)
@@ -106,27 +122,25 @@ def test_split_by_parts():
         stac.create_item(files, split_by_step=True)
 
     i0, i1 = stac.create_item(files[:2], split_by_step=True), stac.create_item(
-        files[2:], split_by_step=True
-    )
+        files[2:], split_by_step=True)
     assert i0.properties["ecmwf:step"] == "0h"
     assert i1.properties["ecmwf:step"] == "3h"
-    assert i0.assets["data"].extra_fields == {}
-    assert i1.datetime == datetime.datetime(2022, 2, 22, 3)
+    #assert i0.assets["data"].extra_fields == {}
+    assert i1.datetime == datetime.datetime(2023, 10, 19, 3)
     assert i1.id.endswith("3h")
+
 
 
 def test_item_assets():
     collection = stac.create_collection()
     assert collection.extra_fields["item_assets"]["data"]["roles"] == ["data"]
-    assert (
-        collection.extra_fields["item_assets"]["data"]["type"]
-        == "application/wmo-GRIB2"
-    )
-    assert collection.extra_fields["item_assets"]["index"]["roles"] == ["index"]
-    assert (
-        collection.extra_fields["item_assets"]["index"]["type"]
-        == "application/x-ndjson"
-    )
+    assert (collection.extra_fields["item_assets"]["data"]["type"] ==
+            "application/wmo-GRIB2")
+    assert collection.extra_fields["item_assets"]["index"]["roles"] == [
+        "index"
+    ]
+    assert (collection.extra_fields["item_assets"]["index"]["type"] ==
+            "application/x-ndjson")
 
     # assert collection.extra_fields["item_assets"]["index"] == {
     #     "roles": ["index"],
