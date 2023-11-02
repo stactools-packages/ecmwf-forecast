@@ -73,12 +73,7 @@ def get_kerchunk_indices(part):
 
     #get output, filter down and only keep the unique d['refs'] items
     d = convert_base64(compress_lat_lon(mzz.translate()))
-    new_d = {}
-    new_d['refs'] = dict(filter(filter_kerchunk(d['refs'].items())))
-
-    return new_d
-
-def filter_kerchunk(pair):
+    filtered_d = {}
     wanted_keys = ['time/0',
                    'mp2/0.0.0',
                    'mwd/0.0.0',
@@ -87,11 +82,9 @@ def filter_kerchunk(pair):
                    'pp1d/0.0.0',
                    'valid_time/0',
                    'step/0']
-    key, value = pair
-    if key in wanted_keys:
-        return True
-    else:
-        return False
+    filtered_d['refs'] = {k:v for k,v in d['refs'].items() if k in wanted_keys}
+
+    return filtered_d
 
 def convert_base64(d):
     for key in d['refs']:
