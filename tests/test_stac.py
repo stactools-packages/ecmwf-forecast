@@ -110,10 +110,10 @@ def test_list_sibling_assets(filename):
 
 def test_split_by_parts():
     files = [
-        "ecmwf/20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
-        "ecmwf/20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.index",
-        "ecmwf/20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.grib2",
-        "ecmwf/20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.index",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.index",
+        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.grib2",
+        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.index",
     ]
 
     stac.create_item(files)
