@@ -71,8 +71,27 @@ def get_kerchunk_indices(part):
     elif ((part.stream == "scwv") or (part.stream == "wave")) and (part.type == "fc"):
         mzz = MultiZarrToZarr(out, concat_dims=["time"])
 
-    return convert_base64(compress_lat_lon(mzz.translate()))
+    #get output, filter down and only keep the unique d['refs'] items
+    d = convert_base64(compress_lat_lon(mzz.translate()))
+    new_d = {}
+    new_d['refs'] = dict(filter(filter_kerchunk(d['refs'].items())))
 
+    return new_d
+
+def filter_kerchunk(pair):
+    wanted_keys = ['time/0',
+                   'mp2/0.0.0',
+                   'mwd/0.0.0',
+                   'mwp/0.0.0',
+                   'swh/0.0.0',
+                   'pp1d/0.0.0',
+                   'valid_time/0',
+                   'step/0']
+    key, value = pair
+    if key in wanted_keys:
+        return True
+    else:
+        return False
 
 def convert_base64(d):
     for key in d['refs']:
