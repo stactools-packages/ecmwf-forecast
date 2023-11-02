@@ -239,7 +239,7 @@ def create_collection(
   'longitude/.zattrs': '{"_ARRAY_DIMENSIONS":["longitude"],"long_name":"longitude","standard_name":"longitude","units":"degrees_east"}',
   'valid_time/.zarray': '{"chunks":[1],"compressor":null,"dtype":"<i8","fill_value":null,"filters":null,"order":"C","shape":[1],"zarr_format":2}',
   'valid_time/.zattrs': '{"_ARRAY_DIMENSIONS":["time"],"calendar":"proleptic_gregorian","long_name":"time","standard_name":"time","units":"seconds since 1970-01-01T00:00:00"}'},
- 'version': 1}, 
+ 'version': 1}}, 
                 "title": "GRIB2 data file",
                 "description": (
                     "The forecast data, as a grib2 file. Subsets of the data can be loaded "
