@@ -115,6 +115,31 @@ def test_split_by_parts():
     assert i1.id.endswith("3h")
 
 
+@pytest.mark.parametrize(
+    ["files", "resolution"],
+    [
+        (
+            (
+                "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-0h-enfo-ef.grib2",
+                "ecmwf/20220222/00z/0p4-beta/enfo/20220222000000-0h-enfo-ef.index",
+            ),
+            "0.40",
+        ),
+        (
+            (
+                "ecmwf/20220222/00z/0p25/enfo/20220222000000-0h-enfo-ef.grib2",
+                "ecmwf/20220222/00z/0p25/enfo/20220222000000-0h-enfo-ef.index",
+            ),
+            "0.25",
+        ),
+    ],
+)
+def test_resolution(files, resolution):
+    result = stac.create_item(files, resolution=resolution)
+    assert result.properties["ecmwf:resolution"] == resolution
+    assert result.id == f"ecmwf-2022-02-22T00-enfo-ef-{resolution}"
+
+
 def test_item_assets():
     collection = stac.create_collection()
     assert collection.extra_fields["item_assets"]["data"]["roles"] == ["data"]

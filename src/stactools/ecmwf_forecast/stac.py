@@ -7,7 +7,7 @@ import logging
 import operator
 import pathlib
 import re
-from typing import Any
+from typing import Any, Optional
 
 import pystac
 from pystac import (
@@ -45,6 +45,7 @@ class Parts:
     format: str
     filename: str
     split_by_step: bool = False
+    resolution: Optional[str] = None
 
     @property
     def datetime(self):
@@ -54,7 +55,7 @@ class Parts:
             return self.reference_datetime
 
     @classmethod
-    def from_filename(cls, filename: str, split_by_step=False) -> "Parts":
+    def from_filename(cls, filename: str, split_by_step=False, resolution: Optional[str] = None) -> "Parts":
         name = pathlib.Path(filename).name
         m = xpr.match(name)
         if not m:
@@ -64,6 +65,8 @@ class Parts:
         d["reference_datetime"] = datetime.datetime.strptime(
             d["reference_datetime"], "%Y%m%d%H"
         )  # type: ignore
+        if resolution:
+            d["resolution"] = resolution
         #  error: Argument 1 to "Parts" has incompatible type
         # "**Dict[str, Union[str, Any]]"; expected "datetime"
         return cls(**d, split_by_step=split_by_step)  # type: ignore
@@ -78,6 +81,8 @@ class Parts:
         ]
         if self.split_by_step:
             parts.append(self.step)
+        if self.resolution is not None:
+            parts.append(self.resolution)
         return "-".join(parts)
 
     @property
@@ -276,7 +281,7 @@ def group_assets(asset_hrefs: list[str], key=item_key):
     return grouped
 
 
-def create_item(asset_hrefs: list[str], split_by_step=False) -> Item:
+def create_item(asset_hrefs: list[str], split_by_step=False, resolution: Optional[str] = None) -> Item:
     """
     Create an item for the hrefs.
 
@@ -292,7 +297,7 @@ def create_item(asset_hrefs: list[str], split_by_step=False) -> Item:
     pystac.Item
     """
     parts = [
-        Parts.from_filename(href, split_by_step=split_by_step) for href in asset_hrefs
+        Parts.from_filename(href, split_by_step=split_by_step, resolution=resolution) for href in asset_hrefs
     ]
     return _create_item_from_parts(parts, split_by_step=split_by_step)
 
@@ -359,6 +364,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     item.properties["ecmwf:reference_datetime"] = (
         part.reference_datetime.isoformat() + "Z"
     )
+    item.properties["ecmwf:resolution"] = part.resolution
     item.properties["ecmwf:forecast_datetime"] = (
         part.forecast_datetime.isoformat() + "Z"
     )
