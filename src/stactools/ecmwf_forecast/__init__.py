@@ -13,4 +13,4 @@ def register_plugin(registry):
     registry.register_subcommand(commands.create_ecmwfforecast_command)
 
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
