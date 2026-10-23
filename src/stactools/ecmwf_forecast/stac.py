@@ -9,7 +9,6 @@ import pathlib
 import re
 from typing import Any, Optional
 
-import fsspec
 import pystac
 from pystac import (
     CatalogType,
@@ -22,7 +21,6 @@ from pystac import (
     TemporalExtent,
 )
 
-from . import _kerchunk_helper_functions as khf
 from . import constants
 
 logger = logging.getLogger(__name__)
@@ -299,7 +297,7 @@ def group_assets(asset_hrefs: list[str], key=item_key):
 
 def create_item(asset_hrefs: list[str], split_by_step=False, resolution: Optional[str] = None) -> Item:
     """
-    Create an item for the hrefs.
+    Create a metadata-only item for the hrefs without opening asset files.
 
     Parameters
     ----------
@@ -324,6 +322,7 @@ def create_item_from_representative_asset(asset_href: str) -> Item:
 
     This method takes a single HREF, and uses the guidance from the ECMWF
     on which assets are published together and belong in the same item.
+    Asset files are not opened.
 
     Parameters
     ----------
@@ -387,9 +386,6 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         part.forecast_datetime.isoformat() + "Z"
     )
 
-    fs = fsspec.filesystem("")
-    fs.clear_instance_cache()
-
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
     else:
@@ -403,18 +399,12 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         if p.format == "grib2":
             media_type = GRIB2_MEDIA_TYPE
             roles = ["data"]
-            if ((p.stream == "wave") & (p.type == "fc")):
-                kerchunk_indices = khf.get_kerchunk_indices(p)
-            else:
-                kerchunk_indices = {}
         elif p.format == "index":
             media_type = NDJSON_MEDIA_TYPE
             roles = ["index"]
-            kerchunk_indices = None
         elif p.format == "bufr":
             media_type = None
             roles = ["data"]
-            kerchunk_indices = None
         else:
             raise ValueError(f"Bad extension: {p.format}")
 
@@ -424,7 +414,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
-                extra_fields={"ecmwf:step": p.step, "kerchunk:indices": kerchunk_indices} if not split_by_step else {"kerchunk:indices": kerchunk_indices},
+                extra_fields={"ecmwf:step": p.step} if not split_by_step else {},
             ),
         )
 

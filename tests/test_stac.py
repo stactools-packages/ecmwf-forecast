@@ -3,22 +3,6 @@ import datetime
 import pytest
 
 from stactools.ecmwf_forecast import stac
-import json
-import os
-import urllib.request
-
-blob_file = ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
-         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2")
-local_files = ["20231019000000-0h-wave-fc.grib2",
-               "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
-               "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.grib2",
-        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.index",
-        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.index"]
-for i, local_file in enumerate(local_files):
-    if not os.path.exists(local_file):
-        if i==1:
-            os.makedirs(local_file.split('.')[0], exist_ok=True)
-        urllib.request.urlretrieve(blob_file, local_file)
 
 
 def test_create_collection():
@@ -54,10 +38,7 @@ def test_create_items(filename):
     assert item.properties["ecmwf:forecast_datetime"] == "2023-10-19T00:00:00Z"
     assert item.properties[
         "ecmwf:reference_datetime"] == "2023-10-19T00:00:00Z"
-    if filename.startswith("https://ai4edataeuwest.blob.core.windows.net/"):
-        with open("tests/blob_kerchunk_indices.json") as jsonfile:
-            kerchunk_indices = json.load(jsonfile)
-        assert item.assets["0h-grib2"].to_dict()["kerchunk:indices"] == kerchunk_indices
+    assert item.assets["0h-grib2"].extra_fields == {"ecmwf:step": "0h"}
 
             
 @pytest.mark.parametrize(
@@ -125,7 +106,8 @@ def test_split_by_parts():
         files[2:], split_by_step=True)
     assert i0.properties["ecmwf:step"] == "0h"
     assert i1.properties["ecmwf:step"] == "3h"
-    #assert i0.assets["data"].extra_fields == {}
+    assert all(asset.extra_fields == {} for asset in i0.assets.values())
+    assert all(asset.extra_fields == {} for asset in i1.assets.values())
     assert i1.datetime == datetime.datetime(2023, 10, 19, 3)
     assert i1.id.endswith("3h")
 

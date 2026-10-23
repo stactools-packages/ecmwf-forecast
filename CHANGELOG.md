@@ -37,7 +37,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
-- Nothing.
+- Automatic kerchunk generation and `kerchunk:indices` asset metadata during
+  STAC item creation. Item construction no longer opens GRIB2 files, including
+  for `wave/fc` products, so private source-storage access is not required.
 
 ### Fixed
 

@@ -44,3 +44,14 @@ are unchanged.
 These changes must be installed in the runtime that constructs STAC items;
 changing asset discovery or resolution alone does not update an older
 installed parser.
+
+## Metadata-only item creation
+
+Item construction uses asset filenames and does not open GRIB2 files, including
+for `wave/fc` products. Both explicit asset lists and representative-asset item
+creation preserve the original asset HREFs without making source-storage
+requests.
+
+Kerchunk indices are not generated or attached as `kerchunk:indices` during
+item creation. This allows STAC items to be constructed for private storage
+without requiring source-storage credentials in the item-construction process.

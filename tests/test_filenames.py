@@ -1,8 +1,18 @@
 import datetime
 
+import fsspec
 import pytest
 
 from stactools.ecmwf_forecast import stac
+
+
+@pytest.fixture(autouse=True)
+def forbid_asset_access(monkeypatch):
+    def fail(*args, **kwargs):
+        pytest.fail("STAC item construction must not access asset storage")
+
+    monkeypatch.setattr(fsspec, "open", fail)
+    monkeypatch.setattr(fsspec.AbstractFileSystem, "open", fail)
 
 
 @pytest.mark.parametrize("suffix", [None, "sfc", "pl"])
@@ -66,13 +76,16 @@ def test_parts_rejects_incomplete_filename_matches(filename):
 
 
 @pytest.mark.parametrize("suffix", [None, "sfc", "pl"])
+@pytest.mark.parametrize("stream, type_", [("waef", "ef"), ("wave", "fc")])
 @pytest.mark.parametrize("split_by_step", [False, True])
 @pytest.mark.parametrize("resolution", [None, "0.25", "0.10"])
-def test_create_item_filename_variants(suffix, split_by_step, resolution):
+def test_create_item_filename_variants(
+    suffix, stream, type_, split_by_step, resolution
+):
     qualifier = f"-{suffix}" if suffix else ""
     steps = ["3h"] if split_by_step else ["0h", "3h"]
     filenames = [
-        f"20261021180000-{step}-waef-ef{qualifier}.{format_}"
+        f"20261021180000-{step}-{stream}-{type_}{qualifier}.{format_}"
         for step in steps
         for format_ in ["grib2", "index"]
     ]
@@ -84,10 +97,10 @@ def test_create_item_filename_variants(suffix, split_by_step, resolution):
     step_id = "-3h" if split_by_step else ""
     resolution_id = f"-{resolution}" if resolution else ""
     assert item.id == (
-        f"ecmwf-2026-10-21T18-waef-ef{qualifier}{step_id}{resolution_id}"
+        f"ecmwf-2026-10-21T18-{stream}-{type_}{qualifier}{step_id}{resolution_id}"
     )
-    assert item.properties["ecmwf:type"] == "ef"
-    assert item.properties["ecmwf:stream"] == "waef"
+    assert item.properties["ecmwf:type"] == type_
+    assert item.properties["ecmwf:stream"] == stream
     assert item.properties["ecmwf:resolution"] == resolution
     if suffix:
         assert item.properties["ecmwf:suffix"] == suffix
@@ -108,6 +121,9 @@ def test_create_item_filename_variants(suffix, split_by_step, resolution):
     assert len(item.assets) == len(filenames)
     assert {asset.href for asset in item.assets.values()} == set(filenames)
     for asset in item.assets.values():
+        assert asset.extra_fields == (
+            {} if split_by_step else {"ecmwf:step": asset.href.split("-")[1]}
+        )
         if asset.href.endswith(".grib2"):
             assert asset.media_type == stac.GRIB2_MEDIA_TYPE
             assert asset.roles == ["data"]
@@ -145,9 +161,10 @@ def test_create_item_rejects_mixed_suffixes(qualifiers, split_by_step):
     "key, expected_groups",
     [(stac.item_key, 3), (stac.item_key_split_by_parts, 6)],
 )
-def test_group_assets_separates_suffix_variants(key, expected_groups):
+@pytest.mark.parametrize("stream, type_", [("waef", "ef"), ("wave", "fc")])
+def test_group_assets_separates_suffix_variants(key, expected_groups, stream, type_):
     filenames = [
-        f"20261021180000-{step}-waef-ef{qualifier}.{format_}"
+        f"20261021180000-{step}-{stream}-{type_}{qualifier}.{format_}"
         for step in ["3h", "0h"]
         for qualifier in ["-sfc", "", "-pl"]
         for format_ in ["grib2", "index"]
@@ -169,16 +186,28 @@ def test_group_assets_separates_suffix_variants(key, expected_groups):
 
 @pytest.mark.parametrize("suffix", [None, "sfc", "pl"])
 @pytest.mark.parametrize(
-    "prefix", ["", "https://example.com/ecmwf/20261021/18z/0p1/waef/"]
+    "stream, type_, reference_datetime, expected_assets",
+    [
+        ("waef", "ef", "20261021180000", 98),
+        ("wave", "fc", "20261021120000", 130),
+    ],
 )
-def test_sibling_assets_preserve_suffix(suffix, prefix):
+@pytest.mark.parametrize("url_prefix", ["", "https://example.com/ecmwf/"])
+def test_sibling_assets_preserve_suffix(
+    suffix, stream, type_, reference_datetime, expected_assets, url_prefix
+):
+    prefix = (
+        f"{url_prefix}20261021/{reference_datetime[8:10]}z/0p1/{stream}/"
+        if url_prefix
+        else ""
+    )
     qualifier = f"-{suffix}" if suffix else ""
-    filename = f"{prefix}20261021180000-0h-waef-ef{qualifier}.grib2"
+    filename = f"{prefix}{reference_datetime}-0h-{stream}-{type_}{qualifier}.grib2"
     representative = stac.Parts.from_filename(filename)
 
     siblings = stac.list_sibling_assets(filename)
 
-    assert len(siblings) == 98
+    assert len(siblings) == expected_assets
     assert filename in {part.filename for part in siblings}
     assert {part.suffix for part in siblings} == {suffix}
     assert {part.item_id for part in siblings} == {representative.item_id}
@@ -186,7 +215,8 @@ def test_sibling_assets_preserve_suffix(suffix, prefix):
     assert {part.prefix for part in siblings} == {prefix or None}
     assert len({part.asset_id for part in siblings}) == len(siblings)
     assert all(
-        part.filename.endswith(f"-ef{qualifier}.{part.format}") for part in siblings
+        part.filename.endswith(f"-{type_}{qualifier}.{part.format}")
+        for part in siblings
     )
 
     item = stac.create_item_from_representative_asset(filename)
@@ -195,3 +225,6 @@ def test_sibling_assets_preserve_suffix(suffix, prefix):
     assert {asset.href for asset in item.assets.values()} == {
         part.filename for part in siblings
     }
+    assert all(
+        "kerchunk:indices" not in asset.extra_fields for asset in item.assets.values()
+    )
