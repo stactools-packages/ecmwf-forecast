@@ -29,9 +29,10 @@ logger = logging.getLogger(__name__)
 
 xpr = re.compile(
     r"(?P<reference_datetime>\d{10})0000-"
-    r"(?P<step>\d+[h|m])-"
+    r"(?P<step>\d+[hm])-"
     r"(?P<stream>\w+)-"
-    r"(?P<type>\w+)."
+    r"(?P<type>\w+)"
+    r"(?:-(?P<suffix>\w+))?\."
     r"(?P<format>\w+)"
 )
 
@@ -49,6 +50,7 @@ class Parts:
     filename: str
     split_by_step: bool = False
     resolution: Optional[str] = None
+    suffix: Optional[str] = None
 
     @property
     def datetime(self):
@@ -60,7 +62,7 @@ class Parts:
     @classmethod
     def from_filename(cls, filename: str, split_by_step=False, resolution: Optional[str] = None) -> "Parts":
         name = pathlib.Path(filename).name
-        m = xpr.match(name)
+        m = xpr.fullmatch(name)
         if not m:
             raise ValueError(name)
         d = m.groupdict()
@@ -82,6 +84,8 @@ class Parts:
             self.stream,
             self.type,
         ]
+        if self.suffix is not None:
+            parts.append(self.suffix)
         if self.split_by_step:
             parts.append(self.step)
         if self.resolution is not None:
@@ -93,7 +97,8 @@ class Parts:
         if self.split_by_step:
             return "data" if self.format != "index" else "index"
         else:
-            return f"{self.step}-{self.format}"
+            suffix = f"-{self.suffix}" if self.suffix is not None else ""
+            return f"{self.step}{suffix}-{self.format}"
 
     # mypy complains about  error: Name "datetime.timedelta" is not defined
     # for offset and forecast_datetime
@@ -244,7 +249,7 @@ def create_collection(
     return collection
 
 
-def item_key(filename) -> tuple[datetime.datetime, str, str]:
+def item_key(filename) -> tuple[datetime.datetime, str, str, str]:
     """
     Gives tuple of attributes in a filename used to determine its item.
 
@@ -253,14 +258,15 @@ def item_key(filename) -> tuple[datetime.datetime, str, str]:
     * reference datetime
     * stream
     * type
+    * suffix (empty for legacy filenames)
     """
     parts = Parts.from_filename(filename)
-    return parts.reference_datetime, parts.stream, parts.type
+    return parts.reference_datetime, parts.stream, parts.type, parts.suffix or ""
 
 
 def item_key_split_by_parts(
     filename,
-) -> tuple[datetime.datetime, str, str, datetime.timedelta]:
+) -> tuple[datetime.datetime, str, str, datetime.timedelta, str]:
     """
     Gives tuple of attributes in a filename used to determine its item.
 
@@ -270,9 +276,16 @@ def item_key_split_by_parts(
     * stream
     * type
     * step
+    * suffix (empty for legacy filenames)
     """
     parts = Parts.from_filename(filename)
-    return parts.reference_datetime, parts.stream, parts.type, parts.offset
+    return (
+        parts.reference_datetime,
+        parts.stream,
+        parts.type,
+        parts.offset,
+        parts.suffix or "",
+    )
 
 
 def group_assets(asset_hrefs: list[str], key=item_key):
@@ -364,6 +377,8 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
 
     item.properties["ecmwf:stream"] = part.stream
     item.properties["ecmwf:type"] = part.type
+    if part.suffix is not None:
+        item.properties["ecmwf:suffix"] = part.suffix
     item.properties["ecmwf:reference_datetime"] = (
         part.reference_datetime.isoformat() + "Z"
     )
@@ -440,10 +455,11 @@ def list_sibling_assets(filename) -> list[Parts]:
     }  # type: ignore
     combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
     prefix = p.prefix or ""
+    suffix = f"-{p.suffix}" if p.suffix is not None else ""
 
     other_files = [
         f"{prefix}{p.reference_datetime:%Y%m%d%H}0000-{combo.step}-{combo.stream}"
-        f"-{combo.type}.{combo.format}"
+        f"-{combo.type}{suffix}.{combo.format}"
         for combo in combos
     ]
 

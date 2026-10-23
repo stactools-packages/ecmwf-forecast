@@ -41,4 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Nothing.
+- Parse optional ECMWF product suffixes such as `-sfc` separately from file
+  extensions, require a literal extension separator and a full filename match.
+- Preserve suffixes in item IDs, aggregated asset keys, grouping, and sibling
+  filenames to prevent product variants from colliding while retaining legacy
+  item and asset IDs.
