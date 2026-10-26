@@ -1,5 +1,6 @@
 import datetime
 
+import pystac
 import pytest
 
 from stactools.ecmwf_forecast import stac
@@ -40,7 +41,7 @@ def test_create_items(filename):
         "ecmwf:reference_datetime"] == "2023-10-19T00:00:00Z"
     assert item.assets["0h-grib2"].extra_fields == {"ecmwf:step": "0h"}
 
-            
+
 @pytest.mark.parametrize(
     "filename",
     [
@@ -137,18 +138,33 @@ def test_resolution(files, resolution):
     assert result.id == f"ecmwf-2022-02-22T00-enfo-ef-{resolution}"
 
 
-def test_item_assets():
+@pytest.mark.parametrize("roundtrip", [False, True])
+def test_item_assets(roundtrip):
     collection = stac.create_collection()
-    assert collection.extra_fields["item_assets"]["data"]["roles"] == ["data"]
-    assert (collection.extra_fields["item_assets"]["data"]["type"] ==
-            "application/wmo-GRIB2")
-    assert collection.extra_fields["item_assets"]["index"]["roles"] == [
-        "index"
-    ]
-    assert (collection.extra_fields["item_assets"]["index"]["type"] ==
-            "application/x-ndjson")
+    assert (
+        "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
+        in collection.stac_extensions
+    )
+    if roundtrip:
+        collection = pystac.Collection.from_dict(collection.to_dict())
 
-    # assert collection.extra_fields["item_assets"]["index"] == {
-    #     "roles": ["index"],
-    #     "type": "application/x-ndjson",
-    # }
+    assert collection.to_dict()["item_assets"] == {
+        "data": {
+            "type": "application/wmo-GRIB2",
+            "roles": ["data"],
+            "title": "GRIB2 data file",
+            "description": (
+                "The forecast data, as a grib2 file. Subsets of the data can be loaded "
+                "using information from the associated index file."
+            ),
+        },
+        "index": {
+            "type": "application/x-ndjson",
+            "roles": ["index"],
+            "title": "Index file",
+            "description": (
+                "The index file contains information on each message within "
+                "the GRIB2 file."
+            ),
+        },
+    }

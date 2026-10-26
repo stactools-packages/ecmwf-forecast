@@ -48,3 +48,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Preserve suffixes in item IDs, aggregated asset keys, grouping, and sibling
   filenames to prevent product variants from colliding while retaining legacy
   item and asset IDs.
+- Fix item-assets type checking with newer PySTAC versions without changing
+  collection metadata or requiring a newer PySTAC API.
+- Correct the Black configuration key used to exclude notebooks.

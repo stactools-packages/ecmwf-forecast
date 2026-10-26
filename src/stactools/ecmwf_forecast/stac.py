@@ -20,6 +20,7 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
+from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 
 from . import constants
 
@@ -214,8 +215,9 @@ def create_collection(
     if extra_fields:
         collection.extra_fields.update(extra_fields)
 
-    item_assets = {
-        "data": pystac.extensions.item_assets.AssetDefinition(
+    item_assets_ext = ItemAssetsExtension.ext(collection, add_if_missing=True)
+    item_assets_ext.item_assets = {
+        "data": AssetDefinition(
             {
                 "type": GRIB2_MEDIA_TYPE,
                 "roles": ["data"],
@@ -226,7 +228,7 @@ def create_collection(
                 ),
             }
         ),
-  "index": pystac.extensions.item_assets.AssetDefinition(
+        "index": AssetDefinition(
             {
                 "type": NDJSON_MEDIA_TYPE,
                 "roles": ["index"],
@@ -238,11 +240,6 @@ def create_collection(
             }
         ),
     }
-
-    item_assets_ext = pystac.extensions.item_assets.ItemAssetsExtension.ext(
-        collection, add_if_missing=True
-    )
-    item_assets_ext.item_assets = item_assets
 
     return collection
 
