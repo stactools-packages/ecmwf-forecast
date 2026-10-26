@@ -1,7 +1,9 @@
 {
   "type": "Feature",
   "stac_version": "1.0.0",
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+  ],
   "id": "ecmwf-2026-10-21T18-waef-ef-sfc-0.10",
   "geometry": {
     "type": "Polygon",
@@ -41,6 +43,7 @@
     "ecmwf:type": "ef",
     "ecmwf:suffix": "sfc",
     "ecmwf:reference_datetime": "2026-10-21T18:00:00Z",
+    "forecast:reference_datetime": "2026-10-21T18:00:00Z",
     "ecmwf:resolution": "0.10",
     "ecmwf:forecast_datetime": "2026-10-21T18:00:00Z",
     "start_datetime": "2026-10-21T18:00:00Z",
@@ -53,6 +56,8 @@
       "href": "ecmwf/20261021/18z/0p1/waef/20261021180000-0h-waef-ef-sfc.grib2",
       "type": "application/wmo-GRIB2",
       "ecmwf:step": "0h",
+      "forecast:horizon": "PT0H",
+      "datetime": "2026-10-21T18:00:00Z",
       "roles": [
         "data"
       ]
@@ -61,6 +66,8 @@
       "href": "ecmwf/20261021/18z/0p1/waef/20261021180000-0h-waef-ef-sfc.index",
       "type": "application/x-ndjson",
       "ecmwf:step": "0h",
+      "forecast:horizon": "PT0H",
+      "datetime": "2026-10-21T18:00:00Z",
       "roles": [
         "index"
       ]
@@ -69,6 +76,8 @@
       "href": "ecmwf/20261021/18z/0p1/waef/20261021180000-3h-waef-ef-sfc.grib2",
       "type": "application/wmo-GRIB2",
       "ecmwf:step": "3h",
+      "forecast:horizon": "PT3H",
+      "datetime": "2026-10-21T21:00:00Z",
       "roles": [
         "data"
       ]
@@ -77,6 +86,8 @@
       "href": "ecmwf/20261021/18z/0p1/waef/20261021180000-3h-waef-ef-sfc.index",
       "type": "application/x-ndjson",
       "ecmwf:step": "3h",
+      "forecast:horizon": "PT3H",
+      "datetime": "2026-10-21T21:00:00Z",
       "roles": [
         "index"
       ]

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pystac
 import pytest
+from pystac.validation import JsonSchemaSTACValidator
 
 from stactools.ecmwf_forecast import stac
 
@@ -41,7 +42,11 @@ def test_create_items(filename):
     assert item.properties["ecmwf:forecast_datetime"] == "2023-10-19T00:00:00Z"
     assert item.properties[
         "ecmwf:reference_datetime"] == "2023-10-19T00:00:00Z"
-    assert item.assets["0h-grib2"].extra_fields == {"ecmwf:step": "0h"}
+    assert item.assets["0h-grib2"].extra_fields == {
+        "ecmwf:step": "0h",
+        "forecast:horizon": "PT0H",
+        "datetime": "2023-10-19T00:00:00Z",
+    }
 
 
 def test_create_item_matches_example(monkeypatch):
@@ -60,13 +65,37 @@ def test_create_item_matches_example(monkeypatch):
     assert json.loads(json.dumps(item.to_dict())) == expected
 
 
+@pytest.mark.parametrize("split_by_step", [False, True])
+def test_forecast_schema(split_by_step):
+    steps = ["3h"] if split_by_step else ["6h", "3h"]
+    filenames = [
+        f"20261021180000-{step}-waef-ef-sfc.{extension}"
+        for step in steps
+        for extension in ["grib2", "index"]
+    ]
+    item = stac.create_item(filenames, split_by_step=split_by_step)
+    schema_uri = "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+
+    assert (
+        JsonSchemaSTACValidator().validate_extension(
+            item.to_dict(),
+            pystac.STACObjectType.ITEM,
+            pystac.get_stac_version(),
+            schema_uri,
+        )
+        == schema_uri
+    )
+
+
 @pytest.mark.parametrize(
     "filename",
     [
         "20231019000000-0h-wave-fc.grib2",
         "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
-        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
-         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"),
+        (
+            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
+            "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"
+        ),
     ],
 )
 def test_parts(filename):

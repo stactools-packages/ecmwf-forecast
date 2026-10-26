@@ -29,7 +29,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Nothing.
+- Forecast Extension v0.2.0 metadata alongside the existing ECMWF fields:
+  `forecast:reference_datetime` on items, ISO 8601 `forecast:horizon` on
+  split-by-step items, and per-asset horizons and valid datetimes on aggregated
+  items. Existing metadata and identifiers are preserved.
 
 ### Deprecated
 

@@ -29,6 +29,27 @@ For a complete, human-readable output example, see
 The regression test compares the entire generated JSON against this fixture,
 using STAC `1.0.0` explicitly so PySTAC's default version does not affect it.
 
+## Forecast metadata
+
+Generated items declare the
+[Forecast Extension v0.2.0](https://github.com/stac-extensions/forecast/tree/v0.2.0).
+Prefer the standard fields when consuming new items:
+
+| Meaning | Standard field | Legacy field (retained) |
+| --- | --- | --- |
+| Model reference time | `forecast:reference_datetime` | `ecmwf:reference_datetime` |
+| Forecast valid time | `datetime` | `ecmwf:forecast_datetime` |
+| Lead time | `forecast:horizon` (e.g. `PT3H`) | `ecmwf:step` (e.g. `3h`) |
+
+For split-by-step items (including CLI output), the standard fields are item
+properties. For aggregated items, the reference time is an item property, while
+each asset carries its own `forecast:horizon` and `datetime`. This avoids
+assigning one lead time to multiple forecast steps.
+
+Existing ECMWF fields, item IDs, item timestamps, and asset keys are unchanged
+for backward compatibility. No accumulation duration or forecast variable is
+inferred from filenames.
+
 ## Filename compatibility
 
 Both legacy filenames such as `20261021180000-0h-waef-ef.grib2` and filenames

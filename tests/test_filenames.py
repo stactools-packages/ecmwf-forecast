@@ -102,6 +102,14 @@ def test_create_item_filename_variants(
     assert item.properties["ecmwf:type"] == type_
     assert item.properties["ecmwf:stream"] == stream
     assert item.properties["ecmwf:resolution"] == resolution
+    assert item.stac_extensions == [
+        "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+    ]
+    assert (
+        item.properties["forecast:reference_datetime"]
+        == (item.properties["ecmwf:reference_datetime"])
+        == "2026-10-21T18:00:00Z"
+    )
     if suffix:
         assert item.properties["ecmwf:suffix"] == suffix
     else:
@@ -109,8 +117,10 @@ def test_create_item_filename_variants(
     if split_by_step:
         assert set(item.assets) == {"data", "index"}
         assert item.properties["ecmwf:step"] == "3h"
+        assert item.properties["forecast:horizon"] == "PT3H"
         assert item.datetime == datetime.datetime(2026, 10, 21, 21)
     else:
+        assert "forecast:horizon" not in item.properties
         assert set(item.assets) == {
             f"{step}{qualifier}-{format_}"
             for step in steps
@@ -121,8 +131,18 @@ def test_create_item_filename_variants(
     assert len(item.assets) == len(filenames)
     assert {asset.href for asset in item.assets.values()} == set(filenames)
     for asset in item.assets.values():
+        step = asset.href.split("-")[1]
+        valid_datetime = datetime.datetime(2026, 10, 21, 18) + datetime.timedelta(
+            hours=int(step[:-1])
+        )
         assert asset.extra_fields == (
-            {} if split_by_step else {"ecmwf:step": asset.href.split("-")[1]}
+            {}
+            if split_by_step
+            else {
+                "ecmwf:step": step,
+                "forecast:horizon": f"PT{step[:-1]}H",
+                "datetime": valid_datetime.isoformat() + "Z",
+            }
         )
         if asset.href.endswith(".grib2"):
             assert asset.media_type == stac.GRIB2_MEDIA_TYPE
@@ -130,6 +150,45 @@ def test_create_item_filename_variants(
         else:
             assert asset.media_type == stac.NDJSON_MEDIA_TYPE
             assert asset.roles == ["index"]
+
+
+@pytest.mark.parametrize("split_by_step", [False, True])
+@pytest.mark.parametrize(
+    "step, hours, horizon",
+    [
+        ("0h", 0, "PT0H"),
+        ("3h", 3, "PT3H"),
+        ("120h", 120, "PT120H"),
+        ("003h", 3, "PT3H"),
+    ],
+)
+def test_forecast_times(step, hours, horizon, split_by_step):
+    reference = datetime.datetime(2026, 10, 21, 18)
+    valid_datetime = reference + datetime.timedelta(hours=hours)
+    filenames = [
+        f"20261021180000-{step}-waef-ef-sfc.{extension}"
+        for extension in ["grib2", "index"]
+    ]
+    item = stac.create_item(filenames, split_by_step=split_by_step)
+
+    assert (
+        item.properties["forecast:reference_datetime"]
+        == (item.properties["ecmwf:reference_datetime"])
+        == "2026-10-21T18:00:00Z"
+    )
+    assert item.properties["ecmwf:forecast_datetime"] == (
+        valid_datetime.isoformat() + "Z"
+    )
+    if split_by_step:
+        assert item.properties["forecast:horizon"] == horizon
+        assert item.properties["ecmwf:step"] == step
+        assert item.datetime == valid_datetime
+    else:
+        assert "forecast:horizon" not in item.properties
+        for asset in item.assets.values():
+            assert asset.extra_fields["forecast:horizon"] == horizon
+            assert asset.extra_fields["ecmwf:step"] == step
+            assert asset.extra_fields["datetime"] == valid_datetime.isoformat() + "Z"
 
 
 @pytest.mark.parametrize("split_by_step", [False, True])
@@ -228,3 +287,12 @@ def test_sibling_assets_preserve_suffix(
     assert all(
         "kerchunk:indices" not in asset.extra_fields for asset in item.assets.values()
     )
+    assert item.properties["forecast:reference_datetime"] == (
+        item.properties["ecmwf:reference_datetime"]
+    )
+    for part in siblings:
+        asset = item.assets[part.asset_id]
+        assert asset.extra_fields["forecast:horizon"] == f"PT{part.step[:-1]}H"
+        assert (
+            asset.extra_fields["datetime"] == part.forecast_datetime.isoformat() + "Z"
+        )

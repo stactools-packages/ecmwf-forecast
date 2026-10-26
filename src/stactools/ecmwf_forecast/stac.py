@@ -37,6 +37,9 @@ xpr = re.compile(
 
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 GRIB2_MEDIA_TYPE = "application/wmo-GRIB2"
+FORECAST_EXTENSION_SCHEMA = (
+    "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+)
 
 
 @dataclasses.dataclass
@@ -59,7 +62,9 @@ class Parts:
             return self.reference_datetime
 
     @classmethod
-    def from_filename(cls, filename: str, split_by_step=False, resolution: Optional[str] = None) -> "Parts":
+    def from_filename(
+        cls, filename: str, split_by_step=False, resolution: Optional[str] = None
+    ) -> "Parts":
         name = pathlib.Path(filename).name
         m = xpr.fullmatch(name)
         if not m:
@@ -117,6 +122,10 @@ class Parts:
     @property
     def forecast_datetime(self):
         return self.reference_datetime + self.offset
+
+    @property
+    def forecast_horizon(self) -> str:
+        return f"PT{int(self.step[:-1])}{self.step[-1].upper()}"
 
     @property
     def prefix(self) -> str | None:
@@ -292,7 +301,9 @@ def group_assets(asset_hrefs: list[str], key=item_key):
     return grouped
 
 
-def create_item(asset_hrefs: list[str], split_by_step=False, resolution: Optional[str] = None) -> Item:
+def create_item(
+    asset_hrefs: list[str], split_by_step=False, resolution: Optional[str] = None
+) -> Item:
     """
     Create a metadata-only item for the hrefs without opening asset files.
 
@@ -306,9 +317,11 @@ def create_item(asset_hrefs: list[str], split_by_step=False, resolution: Optiona
     Returns
     -------
     pystac.Item
+        Includes Forecast Extension metadata alongside the legacy ECMWF fields.
     """
     parts = [
-        Parts.from_filename(href, split_by_step=split_by_step, resolution=resolution) for href in asset_hrefs
+        Parts.from_filename(href, split_by_step=split_by_step, resolution=resolution)
+        for href in asset_hrefs
     ]
     return _create_item_from_parts(parts, split_by_step=split_by_step)
 
@@ -369,6 +382,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         bbox=bbox,
         datetime=part.datetime,
         properties={},
+        stac_extensions=[FORECAST_EXTENSION_SCHEMA],
     )
 
     item.properties["ecmwf:stream"] = part.stream
@@ -378,6 +392,9 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
     item.properties["ecmwf:reference_datetime"] = (
         part.reference_datetime.isoformat() + "Z"
     )
+    item.properties["forecast:reference_datetime"] = item.properties[
+        "ecmwf:reference_datetime"
+    ]
     item.properties["ecmwf:resolution"] = part.resolution
     item.properties["ecmwf:forecast_datetime"] = (
         part.forecast_datetime.isoformat() + "Z"
@@ -385,6 +402,7 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
 
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
+        item.properties["forecast:horizon"] = part.forecast_horizon
     else:
         offset = max(p.offset for p in parts)
         item.properties["start_datetime"] = part.reference_datetime.isoformat() + "Z"
@@ -411,7 +429,15 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
-                extra_fields={"ecmwf:step": p.step} if not split_by_step else {},
+                extra_fields=(
+                    {
+                        "ecmwf:step": p.step,
+                        "forecast:horizon": p.forecast_horizon,
+                        "datetime": p.forecast_datetime.isoformat() + "Z",
+                    }
+                    if not split_by_step
+                    else {}
+                ),
             ),
         )
 
