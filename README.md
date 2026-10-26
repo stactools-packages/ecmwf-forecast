@@ -23,6 +23,12 @@ stac ecmwf-forecast create-item \
     examples/item.json
 ```
 
+For a complete, human-readable output example, see
+[`tests/fixtures/item.json`](tests/fixtures/item.json). It contains the `0h` and
+`3h` GRIB2/index assets for a suffixed product at resolution `0.10`.
+The regression test compares the entire generated JSON against this fixture,
+using STAC `1.0.0` explicitly so PySTAC's default version does not affect it.
+
 ## Filename compatibility
 
 Both legacy filenames such as `20261021180000-0h-waef-ef.grib2` and filenames

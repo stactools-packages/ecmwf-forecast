@@ -1,4 +1,6 @@
 import datetime
+import json
+from pathlib import Path
 
 import pystac
 import pytest
@@ -30,7 +32,7 @@ def test_create_collection():
 )
 def test_create_items(filename):
     item = stac.create_item([filename])
-        
+
     assert item.id == "ecmwf-2023-10-19T00-wave-fc"
     assert len(item.assets) == 1
     assert item.bbox == [-180.0, -90.0, 180.0, 90.0]
@@ -40,6 +42,22 @@ def test_create_items(filename):
     assert item.properties[
         "ecmwf:reference_datetime"] == "2023-10-19T00:00:00Z"
     assert item.assets["0h-grib2"].extra_fields == {"ecmwf:step": "0h"}
+
+
+def test_create_item_matches_example(monkeypatch):
+    fixture_path = Path(__file__).parent / "fixtures" / "item.json"
+    expected = json.loads(fixture_path.read_text(encoding="utf-8"))
+    # Keep the fixture independent of PySTAC's default STAC version.
+    monkeypatch.setenv("PYSTAC_STAC_VERSION_OVERRIDE", expected["stac_version"])
+
+    asset_hrefs = [
+        f"ecmwf/20261021/18z/0p1/waef/20261021180000-{step}-waef-ef-sfc.{extension}"
+        for step in ["0h", "3h"]
+        for extension in ["grib2", "index"]
+    ]
+    item = stac.create_item(asset_hrefs, resolution="0.10")
+
+    assert json.loads(json.dumps(item.to_dict())) == expected
 
 
 @pytest.mark.parametrize(
