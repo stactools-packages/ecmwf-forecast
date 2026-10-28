@@ -29,7 +29,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Nothing.
+- Forecast Extension v0.2.0 metadata alongside the existing ECMWF fields:
+  `forecast:reference_datetime` on items, ISO 8601 `forecast:horizon` on
+  split-by-step items, and per-asset horizons and valid datetimes on aggregated
+  items. Existing metadata and identifiers are preserved.
 
 ### Deprecated
 
@@ -37,8 +40,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
-- Nothing.
+- Automatic kerchunk generation and `kerchunk:indices` asset metadata during
+  STAC item creation. Item construction no longer opens GRIB2 files, including
+  for `wave/fc` products, so private source-storage access is not required.
 
 ### Fixed
 
-- Nothing.
+- Parse optional ECMWF product suffixes such as `-sfc` separately from file
+  extensions, require a literal extension separator and a full filename match.
+- Preserve suffixes in item IDs, aggregated asset keys, grouping, and sibling
+  filenames to prevent product variants from colliding while retaining legacy
+  item and asset IDs.
+- Fix item-assets type checking with newer PySTAC versions without changing
+  collection metadata or requiring a newer PySTAC API.
+- Correct the Black configuration key used to exclude notebooks.

@@ -1,24 +1,12 @@
 import datetime
+import json
+from pathlib import Path
 
+import pystac
 import pytest
+from pystac.validation import JsonSchemaSTACValidator
 
 from stactools.ecmwf_forecast import stac
-import json
-import os
-import urllib.request
-
-blob_file = ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
-         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2")
-local_files = ["20231019000000-0h-wave-fc.grib2",
-               "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
-               "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.grib2",
-        "20231019/00z/0p4-beta/wave/20231019000000-3h-wave-fc.index",
-        "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.index"]
-for i, local_file in enumerate(local_files):
-    if not os.path.exists(local_file):
-        if i==1:
-            os.makedirs(local_file.split('.')[0], exist_ok=True)
-        urllib.request.urlretrieve(blob_file, local_file)
 
 
 def test_create_collection():
@@ -45,7 +33,7 @@ def test_create_collection():
 )
 def test_create_items(filename):
     item = stac.create_item([filename])
-        
+
     assert item.id == "ecmwf-2023-10-19T00-wave-fc"
     assert len(item.assets) == 1
     assert item.bbox == [-180.0, -90.0, 180.0, 90.0]
@@ -54,19 +42,60 @@ def test_create_items(filename):
     assert item.properties["ecmwf:forecast_datetime"] == "2023-10-19T00:00:00Z"
     assert item.properties[
         "ecmwf:reference_datetime"] == "2023-10-19T00:00:00Z"
-    if filename.startswith("https://ai4edataeuwest.blob.core.windows.net/"):
-        with open("tests/blob_kerchunk_indices.json") as jsonfile:
-            kerchunk_indices = json.load(jsonfile)
-        assert item.assets["0h-grib2"].to_dict()["kerchunk:indices"] == kerchunk_indices
+    assert item.assets["0h-grib2"].extra_fields == {
+        "ecmwf:step": "0h",
+        "forecast:horizon": "PT0H",
+        "datetime": "2023-10-19T00:00:00Z",
+    }
 
-            
+
+def test_create_item_matches_example(monkeypatch):
+    fixture_path = Path(__file__).parent / "fixtures" / "item.json"
+    expected = json.loads(fixture_path.read_text(encoding="utf-8"))
+    # Keep the fixture independent of PySTAC's default STAC version.
+    monkeypatch.setenv("PYSTAC_STAC_VERSION_OVERRIDE", expected["stac_version"])
+
+    asset_hrefs = [
+        f"ecmwf/20261021/18z/0p1/waef/20261021180000-{step}-waef-ef-sfc.{extension}"
+        for step in ["0h", "3h"]
+        for extension in ["grib2", "index"]
+    ]
+    item = stac.create_item(asset_hrefs, resolution="0.10")
+
+    assert json.loads(json.dumps(item.to_dict())) == expected
+
+
+@pytest.mark.parametrize("split_by_step", [False, True])
+def test_forecast_schema(split_by_step):
+    steps = ["3h"] if split_by_step else ["6h", "3h"]
+    filenames = [
+        f"20261021180000-{step}-waef-ef-sfc.{extension}"
+        for step in steps
+        for extension in ["grib2", "index"]
+    ]
+    item = stac.create_item(filenames, split_by_step=split_by_step)
+    schema_uri = "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+
+    assert (
+        JsonSchemaSTACValidator().validate_extension(
+            item.to_dict(),
+            pystac.STACObjectType.ITEM,
+            pystac.get_stac_version(),
+            schema_uri,
+        )
+        == schema_uri
+    )
+
+
 @pytest.mark.parametrize(
     "filename",
     [
         "20231019000000-0h-wave-fc.grib2",
         "20231019/00z/0p4-beta/wave/20231019000000-0h-wave-fc.grib2",
-        ("https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
-         "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"),
+        (
+            "https://ai4edataeuwest.blob.core.windows.net/ecmwf/20231019/00z/"
+            "0p4-beta/wave/20231019000000-0h-wave-fc.grib2"
+        ),
     ],
 )
 def test_parts(filename):
@@ -125,7 +154,8 @@ def test_split_by_parts():
         files[2:], split_by_step=True)
     assert i0.properties["ecmwf:step"] == "0h"
     assert i1.properties["ecmwf:step"] == "3h"
-    #assert i0.assets["data"].extra_fields == {}
+    assert all(asset.extra_fields == {} for asset in i0.assets.values())
+    assert all(asset.extra_fields == {} for asset in i1.assets.values())
     assert i1.datetime == datetime.datetime(2023, 10, 19, 3)
     assert i1.id.endswith("3h")
 
@@ -155,18 +185,33 @@ def test_resolution(files, resolution):
     assert result.id == f"ecmwf-2022-02-22T00-enfo-ef-{resolution}"
 
 
-def test_item_assets():
+@pytest.mark.parametrize("roundtrip", [False, True])
+def test_item_assets(roundtrip):
     collection = stac.create_collection()
-    assert collection.extra_fields["item_assets"]["data"]["roles"] == ["data"]
-    assert (collection.extra_fields["item_assets"]["data"]["type"] ==
-            "application/wmo-GRIB2")
-    assert collection.extra_fields["item_assets"]["index"]["roles"] == [
-        "index"
-    ]
-    assert (collection.extra_fields["item_assets"]["index"]["type"] ==
-            "application/x-ndjson")
+    assert (
+        "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
+        in collection.stac_extensions
+    )
+    if roundtrip:
+        collection = pystac.Collection.from_dict(collection.to_dict())
 
-    # assert collection.extra_fields["item_assets"]["index"] == {
-    #     "roles": ["index"],
-    #     "type": "application/x-ndjson",
-    # }
+    assert collection.to_dict()["item_assets"] == {
+        "data": {
+            "type": "application/wmo-GRIB2",
+            "roles": ["data"],
+            "title": "GRIB2 data file",
+            "description": (
+                "The forecast data, as a grib2 file. Subsets of the data can be loaded "
+                "using information from the associated index file."
+            ),
+        },
+        "index": {
+            "type": "application/x-ndjson",
+            "roles": ["index"],
+            "title": "Index file",
+            "description": (
+                "The index file contains information on each message within "
+                "the GRIB2 file."
+            ),
+        },
+    }

@@ -9,7 +9,6 @@ import pathlib
 import re
 from typing import Any, Optional
 
-import fsspec
 import pystac
 from pystac import (
     CatalogType,
@@ -21,22 +20,26 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
+from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 
-from . import _kerchunk_helper_functions as khf
 from . import constants
 
 logger = logging.getLogger(__name__)
 
 xpr = re.compile(
     r"(?P<reference_datetime>\d{10})0000-"
-    r"(?P<step>\d+[h|m])-"
+    r"(?P<step>\d+[hm])-"
     r"(?P<stream>\w+)-"
-    r"(?P<type>\w+)."
+    r"(?P<type>\w+)"
+    r"(?:-(?P<suffix>\w+))?\."
     r"(?P<format>\w+)"
 )
 
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 GRIB2_MEDIA_TYPE = "application/wmo-GRIB2"
+FORECAST_EXTENSION_SCHEMA = (
+    "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+)
 
 
 @dataclasses.dataclass
@@ -49,6 +52,7 @@ class Parts:
     filename: str
     split_by_step: bool = False
     resolution: Optional[str] = None
+    suffix: Optional[str] = None
 
     @property
     def datetime(self):
@@ -58,9 +62,11 @@ class Parts:
             return self.reference_datetime
 
     @classmethod
-    def from_filename(cls, filename: str, split_by_step=False, resolution: Optional[str] = None) -> "Parts":
+    def from_filename(
+        cls, filename: str, split_by_step=False, resolution: Optional[str] = None
+    ) -> "Parts":
         name = pathlib.Path(filename).name
-        m = xpr.match(name)
+        m = xpr.fullmatch(name)
         if not m:
             raise ValueError(name)
         d = m.groupdict()
@@ -82,6 +88,8 @@ class Parts:
             self.stream,
             self.type,
         ]
+        if self.suffix is not None:
+            parts.append(self.suffix)
         if self.split_by_step:
             parts.append(self.step)
         if self.resolution is not None:
@@ -93,7 +101,8 @@ class Parts:
         if self.split_by_step:
             return "data" if self.format != "index" else "index"
         else:
-            return f"{self.step}-{self.format}"
+            suffix = f"-{self.suffix}" if self.suffix is not None else ""
+            return f"{self.step}{suffix}-{self.format}"
 
     # mypy complains about  error: Name "datetime.timedelta" is not defined
     # for offset and forecast_datetime
@@ -113,6 +122,10 @@ class Parts:
     @property
     def forecast_datetime(self):
         return self.reference_datetime + self.offset
+
+    @property
+    def forecast_horizon(self) -> str:
+        return f"PT{int(self.step[:-1])}{self.step[-1].upper()}"
 
     @property
     def prefix(self) -> str | None:
@@ -211,8 +224,9 @@ def create_collection(
     if extra_fields:
         collection.extra_fields.update(extra_fields)
 
-    item_assets = {
-        "data": pystac.extensions.item_assets.AssetDefinition(
+    item_assets_ext = ItemAssetsExtension.ext(collection, add_if_missing=True)
+    item_assets_ext.item_assets = {
+        "data": AssetDefinition(
             {
                 "type": GRIB2_MEDIA_TYPE,
                 "roles": ["data"],
@@ -223,7 +237,7 @@ def create_collection(
                 ),
             }
         ),
-  "index": pystac.extensions.item_assets.AssetDefinition(
+        "index": AssetDefinition(
             {
                 "type": NDJSON_MEDIA_TYPE,
                 "roles": ["index"],
@@ -236,15 +250,10 @@ def create_collection(
         ),
     }
 
-    item_assets_ext = pystac.extensions.item_assets.ItemAssetsExtension.ext(
-        collection, add_if_missing=True
-    )
-    item_assets_ext.item_assets = item_assets
-
     return collection
 
 
-def item_key(filename) -> tuple[datetime.datetime, str, str]:
+def item_key(filename) -> tuple[datetime.datetime, str, str, str]:
     """
     Gives tuple of attributes in a filename used to determine its item.
 
@@ -253,14 +262,15 @@ def item_key(filename) -> tuple[datetime.datetime, str, str]:
     * reference datetime
     * stream
     * type
+    * suffix (empty for legacy filenames)
     """
     parts = Parts.from_filename(filename)
-    return parts.reference_datetime, parts.stream, parts.type
+    return parts.reference_datetime, parts.stream, parts.type, parts.suffix or ""
 
 
 def item_key_split_by_parts(
     filename,
-) -> tuple[datetime.datetime, str, str, datetime.timedelta]:
+) -> tuple[datetime.datetime, str, str, datetime.timedelta, str]:
     """
     Gives tuple of attributes in a filename used to determine its item.
 
@@ -270,9 +280,16 @@ def item_key_split_by_parts(
     * stream
     * type
     * step
+    * suffix (empty for legacy filenames)
     """
     parts = Parts.from_filename(filename)
-    return parts.reference_datetime, parts.stream, parts.type, parts.offset
+    return (
+        parts.reference_datetime,
+        parts.stream,
+        parts.type,
+        parts.offset,
+        parts.suffix or "",
+    )
 
 
 def group_assets(asset_hrefs: list[str], key=item_key):
@@ -284,9 +301,11 @@ def group_assets(asset_hrefs: list[str], key=item_key):
     return grouped
 
 
-def create_item(asset_hrefs: list[str], split_by_step=False, resolution: Optional[str] = None) -> Item:
+def create_item(
+    asset_hrefs: list[str], split_by_step=False, resolution: Optional[str] = None
+) -> Item:
     """
-    Create an item for the hrefs.
+    Create a metadata-only item for the hrefs without opening asset files.
 
     Parameters
     ----------
@@ -298,9 +317,11 @@ def create_item(asset_hrefs: list[str], split_by_step=False, resolution: Optiona
     Returns
     -------
     pystac.Item
+        Includes Forecast Extension metadata alongside the legacy ECMWF fields.
     """
     parts = [
-        Parts.from_filename(href, split_by_step=split_by_step, resolution=resolution) for href in asset_hrefs
+        Parts.from_filename(href, split_by_step=split_by_step, resolution=resolution)
+        for href in asset_hrefs
     ]
     return _create_item_from_parts(parts, split_by_step=split_by_step)
 
@@ -311,6 +332,7 @@ def create_item_from_representative_asset(asset_href: str) -> Item:
 
     This method takes a single HREF, and uses the guidance from the ECMWF
     on which assets are published together and belong in the same item.
+    Asset files are not opened.
 
     Parameters
     ----------
@@ -360,23 +382,27 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         bbox=bbox,
         datetime=part.datetime,
         properties={},
+        stac_extensions=[FORECAST_EXTENSION_SCHEMA],
     )
 
     item.properties["ecmwf:stream"] = part.stream
     item.properties["ecmwf:type"] = part.type
+    if part.suffix is not None:
+        item.properties["ecmwf:suffix"] = part.suffix
     item.properties["ecmwf:reference_datetime"] = (
         part.reference_datetime.isoformat() + "Z"
     )
+    item.properties["forecast:reference_datetime"] = item.properties[
+        "ecmwf:reference_datetime"
+    ]
     item.properties["ecmwf:resolution"] = part.resolution
     item.properties["ecmwf:forecast_datetime"] = (
         part.forecast_datetime.isoformat() + "Z"
     )
 
-    fs = fsspec.filesystem("")
-    fs.clear_instance_cache()
-
     if split_by_step:
         item.properties["ecmwf:step"] = part.step
+        item.properties["forecast:horizon"] = part.forecast_horizon
     else:
         offset = max(p.offset for p in parts)
         item.properties["start_datetime"] = part.reference_datetime.isoformat() + "Z"
@@ -388,18 +414,12 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
         if p.format == "grib2":
             media_type = GRIB2_MEDIA_TYPE
             roles = ["data"]
-            if ((p.stream == "wave") & (p.type == "fc")):
-                kerchunk_indices = khf.get_kerchunk_indices(p)
-            else:
-                kerchunk_indices = {}
         elif p.format == "index":
             media_type = NDJSON_MEDIA_TYPE
             roles = ["index"]
-            kerchunk_indices = None
         elif p.format == "bufr":
             media_type = None
             roles = ["data"]
-            kerchunk_indices = None
         else:
             raise ValueError(f"Bad extension: {p.format}")
 
@@ -409,7 +429,15 @@ def _create_item_from_parts(parts: list[Parts], split_by_step=False) -> Item:
                 p.filename,
                 media_type=media_type,
                 roles=roles,
-                extra_fields={"ecmwf:step": p.step, "kerchunk:indices": kerchunk_indices} if not split_by_step else {"kerchunk:indices": kerchunk_indices},
+                extra_fields=(
+                    {
+                        "ecmwf:step": p.step,
+                        "forecast:horizon": p.forecast_horizon,
+                        "datetime": p.forecast_datetime.isoformat() + "Z",
+                    }
+                    if not split_by_step
+                    else {}
+                ),
             ),
         )
 
@@ -440,10 +468,11 @@ def list_sibling_assets(filename) -> list[Parts]:
     }  # type: ignore
     combos = list(d[p.format, p.type, p.reference_datetime.strftime("%H"), p.stream])
     prefix = p.prefix or ""
+    suffix = f"-{p.suffix}" if p.suffix is not None else ""
 
     other_files = [
         f"{prefix}{p.reference_datetime:%Y%m%d%H}0000-{combo.step}-{combo.stream}"
-        f"-{combo.type}.{combo.format}"
+        f"-{combo.type}{suffix}.{combo.format}"
         for combo in combos
     ]
 

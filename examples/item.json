@@ -6,8 +6,10 @@
     "ecmwf:stream": "enfo",
     "ecmwf:type": "ef",
     "ecmwf:reference_datetime": "2022-02-01T00:00:00Z",
+    "forecast:reference_datetime": "2022-02-01T00:00:00Z",
     "ecmwf:forecast_datetime": "2022-02-01T00:00:00Z",
     "ecmwf:step": "0h",
+    "forecast:horizon": "PT0H",
     "datetime": "2022-02-01T00:00:00Z"
   },
   "geometry": {
@@ -60,5 +62,7 @@
     180.0,
     90.0
   ],
-  "stac_extensions": []
+  "stac_extensions": [
+    "https://stac-extensions.github.io/forecast/v0.2.0/schema.json"
+  ]
 }
